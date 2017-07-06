@@ -10,7 +10,7 @@ CREATE TABLE  user_info(
 CREATE TABLE user_card(
     user_id     int                              COMMENT '用户标识符',
     card_id     int                              COMMENT '卡号',
-    FOREIGN KEY user_id REFERENCES user_info(user_id)
+    FOREIGN KEY (user_id) REFERENCES user_info(user_id)
 );
 
 CREATE TABLE item(
