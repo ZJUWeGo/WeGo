@@ -10,6 +10,7 @@ CREATE TABLE  user_info(
 CREATE TABLE user_card(
     user_id     int                              COMMENT '用户标识符',
     card_id     int     PRIMARY KEY              COMMENT '卡号',
+    user_phone  varchar(11)                      COMMENT '用户预留手机号',      
     FOREIGN KEY (user_id) REFERENCES user_info(user_id)
 );
 
@@ -43,7 +44,9 @@ DROP DATABASE IF EXISTS  bank;
 CREATE DATABASE bank;
 USE bank;
 CREATE TABLE account(
-    user_id   INT    PRIMARY KEY                 COMMENT '用户标识符',
+    
+    card_id   INT    PRIMARY KEY                 COMMENT '用户标识符',
     user_name INT                                COMMENT '用户名',
+    user_phone varchar(11)                       COMMENT '用户预留手机号',  
     money     DOUBLE                             COMMENT '余额'
 );
