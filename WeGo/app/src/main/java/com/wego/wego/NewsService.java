@@ -1,16 +1,21 @@
 package com.wego.wego;
 
+import android.provider.Settings;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.net.ssl.HttpsURLConnection;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.Mac;
-import javax.crypto.SecretKey;
 
 /**
  * Created by Wu on 2017/7/8.
@@ -23,7 +28,7 @@ public class NewsService {
      * @return
      */
     public static boolean save(String email, String password) throws NoSuchAlgorithmException {
-        String path = "http://192.168.1.104:8080/Register/ManageServlet";
+        String path = "http://101.200.42.170:5000/login";
         Map<String, String> customer = new HashMap<String, String>();
         customer.put("name", email);
         customer.put("password", NewsService.encode(password));
@@ -43,7 +48,7 @@ public class NewsService {
      * @throws Exception
      */
     private static boolean SendGETRequest(String path, Map<String, String> student, String ecoding) throws Exception{
-        // http://127.0.0.1:8080/Register/ManageServlet?name=1233&password=abc
+        //?name=1233&password=abc
         StringBuilder url = new StringBuilder(path);
         url.append("?");
         for(Map.Entry<String, String> map : student.entrySet()){
@@ -53,18 +58,34 @@ public class NewsService {
         }
         url.deleteCharAt(url.length()-1);
         System.out.println(url);
-        HttpsURLConnection conn = (HttpsURLConnection)new URL(url.toString()).openConnection();
+        HttpURLConnection conn = (HttpURLConnection)new URL(url.toString()).openConnection();
         conn.setConnectTimeout(100000);
         conn.setRequestMethod("GET");
-        if(conn.getResponseCode() == 200){
+        conn.setReadTimeout(8000);
+        InputStream in = conn.getInputStream();
+        BufferedReader reader = new BufferedReader(
+                new InputStreamReader(in));
+
+        StringBuilder builder = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            builder.append(line);// 一行行的读取内容并追加到builder中去
+        }
+        System.out.println(builder);
+        JSONObject jsonObject = new JSONObject(new String(builder));
+
+        boolean res = jsonObject.getBoolean("status");
+        if (res){
+            System.out.printf("id is %d\n",jsonObject.getInt("id"));
             return true;
         }
-        return false;
+        else return false;
     }
     private static String encode(String password) throws NoSuchAlgorithmException {
         //以上对数据进行加密
-        MessageDigest sha = MessageDigest.getInstance("SHA");
-        sha.update(password.getBytes());
-        return new String(sha.digest());
+//        MessageDigest sha = MessageDigest.getInstance("SHA");
+//        sha.update(password.getBytes());
+//        return new String(sha.digest());
+        return password;
     }
 }
