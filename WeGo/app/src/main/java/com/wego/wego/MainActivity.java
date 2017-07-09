@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity
         String email = bundle.getString("email");
         String password = bundle.getString("password");
         int id = bundle.getInt("id");
+
         String myString = "\n" +"\n" + "\n" + "\n" + "    " + intent.getStringExtra("thisName");
 
         AccountName.setText(myString);
