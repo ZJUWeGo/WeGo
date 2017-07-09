@@ -1,14 +1,11 @@
 package com.wego.wego;
 
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.LayoutInflater;
+import android.provider.Settings;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,36 +18,29 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.R.attr.data;
-import static android.R.id.list;
-import static com.wego.wego.R.id.mylistview;
-
-public class AccountActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Runnable{
+    private String name;
 
     public Handler activityHandler =  new Handler();
 
     private ListView listView;
 
-    public void run() {
+    public void run() {//display the username
 
         Intent intent = getIntent();
 
         //TextView AccountName = (TextView) LayoutInflater.from(AccountActivity.this).inflate(R.layout.nav_header_account, null).findViewById(R.id.Account_name);
 
         TextView AccountName = (TextView)findViewById(R.id.textView4);
-
         System.out.println(intent.getStringExtra("thisName"));
-
+        name = intent.getStringExtra("thisName");
         String myString = "\n" +"\n" + "\n" + "\n" + "    " + intent.getStringExtra("thisName");
 
         AccountName.setText(myString);
@@ -65,12 +55,12 @@ public class AccountActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_account);
+        setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
 
-        activityHandler.post(AccountActivity.this);
+        activityHandler.post(MainActivity.this);
 
 
 
@@ -123,16 +113,17 @@ public class AccountActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_personInfo) {
 
+            System.out.println("This is in personInfo, and my name is ");
+            System.out.println(name);
             listView = (ListView)findViewById(R.id.mylistview);
             listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,getInfo()));
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
 
                 @Override
-                public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-                                        long arg3) {
+                public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                     // TODO Auto-generated method stub
                     switch(arg2){
                         case 0://第一个item
@@ -153,7 +144,7 @@ public class AccountActivity extends AppCompatActivity
             });
 
 
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_historyList) {
 
 
 //            Intent i = new Intent(AccountActivity.this, mylistActivity.class);
@@ -187,7 +178,7 @@ public class AccountActivity extends AppCompatActivity
             });
 
         }
-        else if (id == R.id.nav_slideshow) {
+        else if (id == R.id.nav_home) {
 
             listView = (ListView)findViewById(R.id.mylistview);
             listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,clearData()));
@@ -196,13 +187,6 @@ public class AccountActivity extends AppCompatActivity
 
 
         }
-// else if (id == R.id.nav_manage) {
-//
-//        } else if (id == R.id.nav_share) {
-//
-//        } else if (id == R.id.nav_send) {
-//
-//        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -217,7 +201,7 @@ public class AccountActivity extends AppCompatActivity
         data.add("测试数据3");
         data.add("测试数据4");
         return data;
-               }
+    }
 
     private List<String> getInfo(){
 
@@ -264,7 +248,7 @@ public class AccountActivity extends AppCompatActivity
           })
                 .show();
 
-              }
+    }
     public void showItem(int arg2)  {
 
         new AlertDialog.Builder(this)

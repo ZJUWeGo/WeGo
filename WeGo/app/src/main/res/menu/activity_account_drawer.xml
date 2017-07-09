@@ -2,16 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
+
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="个人信息" />
-        <item
-        android:id="@+id/nav_gallery"
+        android:id="@+id/nav_historyList"
         android:icon="@drawable/ic_menu_gallery"
         android:title="历史订单" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_personInfo"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="个人信息" />
+        <item
+            android:id="@+id/nav_home"
             android:icon="@drawable/ic_menu_gallery"
             android:title="返回首页" />
         <!--<item-->
