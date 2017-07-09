@@ -40,6 +40,9 @@ CREATE TABLE order_item(
     FOREIGN KEY (item_id)  REFERENCES item(item_id)
 );
 
+INSERT INTO user_info values('1','foo@example.com','1234567890');
+INSERT INTO user_info values('2','123@example.com','1234567890');
+
 DROP DATABASE IF EXISTS  bank;
 CREATE DATABASE bank;
 USE bank;
