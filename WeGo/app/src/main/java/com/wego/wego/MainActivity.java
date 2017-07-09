@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity
         //TextView AccountName = (TextView) LayoutInflater.from(AccountActivity.this).inflate(R.layout.nav_header_account, null).findViewById(R.id.Account_name);
 
         TextView AccountName = (TextView)findViewById(R.id.textView4);
-        System.out.println(intent.getStringExtra("thisName"));
+        //System.out.println(intent.getStringExtra("thisName"));
         name = intent.getStringExtra("thisName");
         String myString = "\n" +"\n" + "\n" + "\n" + "    " + intent.getStringExtra("thisName");
 
@@ -125,20 +125,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                     // TODO Auto-generated method stub
-                    switch(arg2){
-                        case 0://第一个item
-                            //Toast.makeText(AccountActivity.this,"AIDE   资源  分享",Toast.LENGTH_SHORT).show();
-                            //showInfo(arg2);
-                            break;
-                        case 1://第二个item
-                            //Toast.makeText(AccountActivity.this,"AIDE   了解  分享",Toast.LENGTH_SHORT).show();
-                            showInfo(arg2);
-                            break;
-                        //case 2://第三个item
-                            //Toast.makeText(AccountActivity.this,"AIDE   玩转  分享",Toast.LENGTH_SHORT).show();
-                            //showInfo(arg2);
-                           // break;
-                    }
+                    ChangeCards(arg2);
                 }
 
             });
@@ -159,20 +146,7 @@ public class MainActivity extends AppCompatActivity
                 public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
                                         long arg3) {
                     // TODO Auto-generated method stub
-                    switch(arg2){
-                        case 0://第一个item
-                            //Toast.makeText(AccountActivity.this,"AIDE   资源  分享",Toast.LENGTH_SHORT).show();
-                            showItem(arg2);
-                            break;
-                        case 1://第二个item
-                            //Toast.makeText(AccountActivity.this,"AIDE   了解  分享",Toast.LENGTH_SHORT).show();
-                            showItem(arg2);
-                            break;
-                        case 2://第三个item
-                            //Toast.makeText(AccountActivity.this,"AIDE   玩转  分享",Toast.LENGTH_SHORT).show();
-                            showItem(arg2);
-                            break;
-                    }
+                    showItem(arg2);
                 }
 
             });
@@ -195,20 +169,29 @@ public class MainActivity extends AppCompatActivity
 
     private List<String> getData(){
 
+        //获取json数组解析出title
+
         List<String> data = new ArrayList<String>();
-        data.add("测试数据1");
-        data.add("测试数据2");
-        data.add("测试数据3");
-        data.add("测试数据4");
+        data.add("2017-7-9 100.00");
+        data.add("2017-7-8 100.00");
+        data.add("2017-7-7 100.00");
+        data.add("2017-7-6 100.00");
         return data;
     }
 
     private List<String> getInfo(){
 
+        Intent intent = getIntent();
+        String Account = intent.getStringExtra("thisName");
+
+        String[] cards = {"400 800 8820","400 800 8821","400 800 8822"};
+
+
         List<String> data = new ArrayList<String>();
-        data.add("账号");
-        //data.add("密码");
-        data.add("银行卡");
+        data.add("账号: "+ Account);
+        for (int i = 0; i < cards.length; i++) {
+            data.add("银行卡" + ( i + 1 ) + ": " + cards[i] );
+        }
         return data;
     }
 
@@ -251,26 +234,16 @@ public class MainActivity extends AppCompatActivity
     }
     public void showItem(int arg2)  {
 
+        String[] Items = {"牙膏  1.00￥","牙刷  1.00￥","牙缸  1.00￥"};
+
         new AlertDialog.Builder(this)
                 .setTitle("订单详情")
-                .setMessage("牙膏")
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-
-
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // TODO Auto-generated method stub
-                        dialog.dismiss();//关闭消息框
-                    }
-                })
+                .setItems(Items, null)
+                .setNegativeButton("确定", null)
                 .show();
+
+    }
+    public void ChangeCards(int arg2) {
 
     }
 
