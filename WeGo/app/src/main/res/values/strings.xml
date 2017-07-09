@@ -19,8 +19,4 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="title_activity_login2222">Sign in</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_pay_fragment">Hello pay fragment</string>
 </resources>

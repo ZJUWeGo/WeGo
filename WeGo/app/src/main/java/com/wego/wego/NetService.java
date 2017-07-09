@@ -23,12 +23,34 @@ public class NetService {
      * 登录验证
      * @param email
      * @param password
-     * @return
+     * @return 是否成功
      */
-    public static boolean login(String email, String password) throws NoSuchAlgorithmException {
+    public static int login(String email, String password) throws NoSuchAlgorithmException {
         String path = "http://101.200.42.170:5000/login";
         Map<String, String> customer = new HashMap<String, String>();
         customer.put("name", email);
+        customer.put("password", NetService.encode(password));
+        try {
+            JSONObject jsonObject = new JSONObject(sendRequestByPost(path, customer, "UTF-8"));
+
+            boolean res = jsonObject.getBoolean("status");
+            if (res) return jsonObject.getInt("id");
+            else return -1;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+    /**
+     * 获取个人信息
+     * @param id
+     * @param password
+     * @return 是否成功
+     */
+    public static boolean getPersonInfo(String id, String password) throws NoSuchAlgorithmException {
+        String path = "http://101.200.42.170:5000/login";
+        Map<String, String> customer = new HashMap<String, String>();
+        customer.put("name", id);
         customer.put("password", NetService.encode(password));
         try {
             JSONObject jsonObject = new JSONObject(sendRequestByPost(path, customer, "UTF-8"));
