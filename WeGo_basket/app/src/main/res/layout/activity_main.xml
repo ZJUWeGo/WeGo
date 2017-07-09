@@ -25,9 +25,18 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="TextView"
+        android:layout_above="@+id/payBtn"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="29dp" />
+
+    <Button
+        android:id="@+id/readItemBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/payBtn"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="32dp"
-        android:text="TextView" />
+        android:layout_marginTop="46dp"
+        android:text="Button" />
 
 </RelativeLayout>

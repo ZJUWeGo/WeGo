@@ -20,8 +20,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements NfcAdapter.CreateNdefMessageCallback,NfcAdapter.OnNdefPushCompleteCallback {
-
+public class MainActivity extends BaseNfcActivity implements NfcAdapter.CreateNdefMessageCallback,NfcAdapter.OnNdefPushCompleteCallback {
+//public class MainActivity extends BaseNfcActivity{
     NfcAdapter mNfcAdapter;
     TextView mInfoText;
     private static final int MESSAGE_SENT = 1;
@@ -40,6 +40,16 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
                 System.out.println("hahaha");
             }
         });
+
+        final Button readBtn = (Button) findViewById(R.id.readItemBtn);
+        readBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this,ReadItem.class);
+                startActivity(intent);
+            }
+        });
+
 
         mInfoText = (TextView) findViewById(R.id.textView);
         // Check for available NFC Adapter
@@ -146,6 +156,10 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Create
             case R.id.menu_settings:
                 Intent intent = new Intent(Settings.ACTION_NFCSHARING_SETTINGS);
                 startActivity(intent);
+                return true;
+            case R.id.add_textTag:
+                Intent intent_addTag = new Intent(MainActivity.this,WriteText.class);
+                startActivity(intent_addTag);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
