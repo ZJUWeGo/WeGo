@@ -32,7 +32,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Runnable{
-    private String name;
+    private String email;
+    private String password;
+    private int id;
 
     public Handler activityHandler =  new Handler();
 
@@ -45,17 +47,13 @@ public class MainActivity extends AppCompatActivity
         //TextView AccountName = (TextView) LayoutInflater.from(AccountActivity.this).inflate(R.layout.nav_header_account, null).findViewById(R.id.Account_name);
 
         TextView AccountName = (TextView)findViewById(R.id.textView4);
-        //System.out.println(intent.getStringExtra("thisName"));
-        name = intent.getStringExtra("thisName");
         Bundle bundle = intent.getExtras();
-        String email = bundle.getString("email");
-        String password = bundle.getString("password");
-        int id = bundle.getInt("id");
+        email = bundle.getString("email");
+        password = bundle.getString("password");
+        id = bundle.getInt("id");
 
-        String myString = "\n" +"\n" + "\n" + "\n" + "    " + intent.getStringExtra("thisName");
-
+        String myString = "\n" +"\n" + "\n" + "\n" + "    " + email;
         AccountName.setText(myString);
-
         AccountName.invalidate();
         activityHandler.postDelayed(this, 1000);
     }
@@ -127,7 +125,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_personInfo) {
 
             System.out.println("This is in personInfo, and my name is ");
-            System.out.println(name);
+            System.out.println(email);
             listView = (ListView)findViewById(R.id.mylistview);
             listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,getInfo()));
 
