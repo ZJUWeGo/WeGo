@@ -3,9 +3,15 @@ package com.wego.wego;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -41,6 +47,10 @@ public class MainActivity extends AppCompatActivity
         TextView AccountName = (TextView)findViewById(R.id.textView4);
         //System.out.println(intent.getStringExtra("thisName"));
         name = intent.getStringExtra("thisName");
+        Bundle bundle = intent.getExtras();
+        String email = bundle.getString("email");
+        String password = bundle.getString("password");
+        int id = bundle.getInt("id");
         String myString = "\n" +"\n" + "\n" + "\n" + "    " + intent.getStringExtra("thisName");
 
         AccountName.setText(myString);
@@ -125,7 +135,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                     // TODO Auto-generated method stub
-                    ChangeCards(arg2);
+                    showInfo(arg2);
                 }
 
             });
@@ -184,13 +194,16 @@ public class MainActivity extends AppCompatActivity
         Intent intent = getIntent();
         String Account = intent.getStringExtra("thisName");
 
-        String[] cards = {"400 800 8820","400 800 8821","400 800 8822"};
+        String[] cards = {"400 800 8820","400 800 8821","400 800 8822","添加新银行卡"};
 
 
         List<String> data = new ArrayList<String>();
         data.add("账号: "+ Account);
         for (int i = 0; i < cards.length; i++) {
-            data.add("银行卡" + ( i + 1 ) + ": " + cards[i] );
+            if ( i < cards.length - 1)
+                data.add("银行卡" + ( i + 1 ) + ": " + cards[i] );
+            else
+                data.add( cards[i] );
         }
         return data;
     }
@@ -203,38 +216,76 @@ public class MainActivity extends AppCompatActivity
 
     public void showInfo(int arg2){
 
-        String string = "123456";
-
-        final EditText edit = new EditText(this);
-        edit.setText(string);
-        new AlertDialog.Builder(this)
-                .setTitle("银行卡更改")
-                .setView(edit)
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-               @Override
-              public void onClick(DialogInterface dialog, int which) {
-
-                   String stringAfterChange = edit.getText().toString();
-
-                   System.out.println(stringAfterChange);
+        String[] cards = {"400 800 8820","400 800 8821","400 800 8822"," "};
 
 
-               }
-          })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+        if (( arg2 != cards.length ) && ( arg2 != 0 ))  {
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // TODO Auto-generated method stub
-                        dialog.dismiss();//关闭消息框
-                 }
-          })
-                .show();
+            final TextView tv = new TextView(this);
+            SpannableString msp = new SpannableString(cards[arg2 - 1]);
+            int length = cards[arg2 - 1].length();
+            msp.setSpan(new RelativeSizeSpan(2.0f), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            msp.setSpan(new ForegroundColorSpan(Color.MAGENTA), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);  //设置前景色为洋红色
+
+            tv.setText(msp);
+            final String deletedCard = cards[arg2 - 1];
+            new AlertDialog.Builder(this)
+                    .setTitle("银行卡删除")
+                    .setView(tv)
+                    .setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            //发送删除请求
+                            System.out.println("删除银行卡：" + deletedCard);
+
+
+                        }
+                    })
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // TODO Auto-generated method stub
+                            dialog.dismiss();//关闭消息框
+                        }
+                    })
+                    .show();
+        }
+        else if ( arg2 != 0 ){
+            final EditText tv = new EditText(this);
+            tv.setText(" ");
+
+            new AlertDialog.Builder(this)
+                    .setTitle("银行卡添加")
+                    .setView(tv)
+                    .setPositiveButton("添加", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            //发送删除请求
+                            System.out.println("添加银行卡：" + tv.getText().toString());
+
+
+                        }
+                    })
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // TODO Auto-generated method stub
+                            dialog.dismiss();//关闭消息框
+                        }
+                    })
+                    .show();
+        }
 
     }
     public void showItem(int arg2)  {
 
-        String[] Items = {"牙膏  1.00￥","牙刷  1.00￥","牙缸  1.00￥"};
+        //获取json数组解析出订单内容
+
+        String[] Items = {"牙膏  1.00￥  3","牙刷  1.00￥  3","牙缸  1.00￥  3"};
 
         new AlertDialog.Builder(this)
                 .setTitle("订单详情")
@@ -243,9 +294,7 @@ public class MainActivity extends AppCompatActivity
                 .show();
 
     }
-    public void ChangeCards(int arg2) {
 
-    }
 
 
 }
