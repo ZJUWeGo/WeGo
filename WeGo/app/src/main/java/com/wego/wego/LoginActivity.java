@@ -45,14 +45,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-//
-//    /**
-//     * A dummy authentication store containing known user names and passwords.
-//     * TODO: remove after connecting to a real authentication system.
-//     */
-//    private static final String[] DUMMY_CREDENTIALS = new String[]{
-//            "foo@example.com:hello", "bar@example.com:world"
-//    };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -64,6 +56,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
 
+    private String email;
+    private String password;
+    private int id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -187,6 +182,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
+            this.email = email;
+            this.password = password;
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
@@ -315,22 +312,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             } catch (InterruptedException e) {
                 return false;
             }
-
-//            for (String credential : DUMMY_CREDENTIALS) {
-//                String[] pieces = credential.split(":");
-//                if (pieces[0].equals(mEmail)) {
-//                    return pieces[1].equals(mPassword);
-//                }
-//            }
-            //以上的处理逻辑是，正确进入主界面，失败不返回
-            boolean result=false;
             try {
-                result = NewsService.save(mEmail,mPassword);
+
+                LoginActivity.this.id = NetService.login(mEmail,mPassword);
+                if (LoginActivity.this.id >= 0) {
+                    return true;
+                }
+                else return false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return result;
-
+            return false;
         }
 
         @Override
@@ -341,6 +333,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             if (success) {
                 Intent intent = new Intent();
                 intent.setClass(LoginActivity.this, MainActivity.class);
+
+                EditText thisEmail = (EditText)findViewById(R.id.email);
+                String ThisName = thisEmail.getText().toString();
+                Bundle bundle=new Bundle();
+                bundle.putString("email",LoginActivity.this.email);
+                bundle.putString("password",LoginActivity.this.password);
+                bundle.putInt("id",LoginActivity.this.id);
+                intent.putExtras(bundle);
+                System.out.println(bundle);
+                intent.putExtra("thisName",ThisName);
+
                 startActivity(intent);
                 finish();
             } else {
