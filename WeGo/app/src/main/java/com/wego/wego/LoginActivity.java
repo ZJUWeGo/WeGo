@@ -336,7 +336,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             if (success) {
                 Intent intent = new Intent();
-                intent.setClass(LoginActivity.this, MainActivity.class);
+                intent.setClass(LoginActivity.this, AccountActivity.class);
+
+                EditText thisEmail = (EditText)findViewById(R.id.email);
+                String ThisName = thisEmail.getText().toString();
+                intent.putExtra("thisName",ThisName);
+
                 startActivity(intent);
                 finish();
             } else {
