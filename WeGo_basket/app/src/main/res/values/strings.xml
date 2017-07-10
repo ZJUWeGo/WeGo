@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WeGo_Basket</string>
+    <string name="app_name">WeGo购物篮</string>
     <string name="payButtonText">付</string>
     <string name="menu_settings">Android Beam settings</string>
 </resources>

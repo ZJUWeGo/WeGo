@@ -5,10 +5,10 @@
     <item android:id="@+id/add_textTag"
         android:icon="@drawable/ic_add_tag"
         app:showAsAction="ifRoom"
-        android:title="@string/menu_settings" />
+        android:title="添加NFC标签" />
 
     <item android:id="@+id/menu_settings"
-          android:icon="@drawable/ic_menu_preferences"
+          android:icon="@drawable/ic_set_nfc"
           app:showAsAction="ifRoom"
           android:title="@string/menu_settings" />
 </menu>

@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
 import android.provider.Settings;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.Time;
@@ -20,6 +21,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.wego.wego_basket.WriteText.createTextRecord;
 
@@ -44,13 +48,26 @@ public class MainActivity extends BaseNfcActivity implements NfcAdapter.CreateNd
                 myItemList.printItem();
                 myItemListText = myItemList.getItem();
 
-                //nfc发送
                 payBtn.setText("Yo");
-                System.out.println("hahaha");
+                Timer timer = new Timer();
+                TimerTask timerTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                payBtn.setText("付");
+                            }
+                        });
+                    }
+                };
+
+                timer.schedule(timerTask,3000);
+                //System.out.println("hahaha");
             }
         });
 
-        final Button readBtn = (Button) findViewById(R.id.readItemBtn);
+        final FloatingActionButton readBtn = (FloatingActionButton) findViewById(R.id.readItemBtn);
         readBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,23 +97,6 @@ public class MainActivity extends BaseNfcActivity implements NfcAdapter.CreateNd
      */
     @Override
     public NdefMessage createNdefMessage(NfcEvent event) {
-//        Time time = new Time();
-//        time.setToNow();
-//        String text = ("Beam me up!\n\n" +
-//                "Beam Time: " + time.format("%H:%M:%S"));
-//        NdefMessage msg = new NdefMessage(NdefRecord.createMime(
-//                "application/ju88.hellonfc", text.getBytes())
-//                /**
-//                 * The Android Application Record (AAR) is commented out. When a device
-//                 * receives a push with an AAR in it, the application specified in the AAR
-//                 * is guaranteed to run. The AAR overrides the tag dispatch system.
-//                 * You can add it back in to guarantee that this
-//                 * activity starts when receiving a beamed message. For now, this code
-//                 * uses the tag dispatch system.
-//                 */
-//                //,NdefRecord.createApplicationRecord("com.example.android.beam")
-//        );
-
         NdefMessage msg = new NdefMessage(
                 new NdefRecord[] { createTextRecord(myItemListText) });
         return msg;
@@ -149,6 +149,19 @@ public class MainActivity extends BaseNfcActivity implements NfcAdapter.CreateNd
         NdefMessage msg = (NdefMessage) rawMsgs[0];
         // record 0 contains the MIME type, record 1 is the AAR, if present
         mInfoText.setText(new String(msg.getRecords()[0].getPayload()));
+        Timer timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mInfoText.setText("");
+                    }
+                });
+            }
+        };
+        timer.schedule(timerTask,1000);
     }
 
     @Override
