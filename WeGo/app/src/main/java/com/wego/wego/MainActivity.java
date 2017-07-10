@@ -304,13 +304,14 @@ public class MainActivity extends AppCompatActivity
         if ( arg2 != cards.length - 1 )   {
 
             final TextView tv = new TextView(this);
-            SpannableString msp = new SpannableString(cards[arg2]);
-            int length = cards[arg2].length();
+            String thisString = "  " + cards[arg2].substring(5);
+            SpannableString msp = new SpannableString(thisString);
+            int length = thisString.length();
             msp.setSpan(new RelativeSizeSpan(2.0f), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             msp.setSpan(new ForegroundColorSpan(Color.MAGENTA), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);  //设置前景色为洋红色
 
             tv.setText(msp);
-            final String deletedCard = cards[arg2];
+            final String deletedCard = thisString;
             new AlertDialog.Builder(this)
                     .setTitle("银行卡删除")
                     .setView(tv)
@@ -341,8 +342,28 @@ public class MainActivity extends AppCompatActivity
                                 e.printStackTrace();
                             }
 
-                            //提示添加成功
-                            System.out.println(jsonObject);
+                            //提示删除成功
+                            try {
+                                System.out.println(jsonObject.get("status").toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            try {
+                                if (jsonObject.get("status").toString() == "true"){
+
+                                    //listView.invalidate();
+
+                                    Toast.makeText(MainActivity.this,"删除成功", Toast.LENGTH_SHORT).show();
+
+                                }else {
+
+                                    Toast.makeText(MainActivity.this,"删除失败", Toast.LENGTH_SHORT).show();
+
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
 
                         }
                     })
@@ -363,11 +384,33 @@ public class MainActivity extends AppCompatActivity
 
 
             final EditText tv1 = new EditText(this);
-            tv1.setText("卡号");
+            tv1.setText("");
             final EditText tv2 = new EditText(this);
-            tv2.setText("联系电话");
+            tv2.setText("");
 
+            String thisString = "卡号";
+            String thatString = "联系电话";
+
+            final TextView tv3 = new TextView(this);
+            SpannableString msp = new SpannableString(thisString);
+            int length = thisString.length();
+            msp.setSpan(new RelativeSizeSpan(1.5f), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            msp.setSpan(new ForegroundColorSpan(Color.MAGENTA), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);  //设置前景色为洋红色
+            tv3.setText(msp);
+
+
+            final TextView tv4 = new TextView(this);
+            SpannableString msp2 = new SpannableString(thatString);
+            int length2 = thatString.length();
+            msp2.setSpan(new RelativeSizeSpan(1.5f), 0, length2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            msp2.setSpan(new ForegroundColorSpan(Color.MAGENTA), 0, length2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);  //设置前景色为洋红色
+            tv4.setText(msp2);
+
+
+
+            myTable.addView(tv3);
             myTable.addView(tv1);
+            myTable.addView(tv4);
             myTable.addView(tv2);
 
             new AlertDialog.Builder(this)
@@ -411,12 +454,16 @@ public class MainActivity extends AppCompatActivity
                             }
 
                             try {
-                                if (jsonObject.get("status") == "true"){
+                                if (jsonObject.get("status").toString() == "true"){
+
                                     Toast.makeText(MainActivity.this,"添加成功", Toast.LENGTH_SHORT).show();
 
+                                    listView.invalidate();
                                 }else {
+
                                     Toast.makeText(MainActivity.this,"添加失败", Toast.LENGTH_SHORT).show();
 
+                                    listView.invalidate();
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
