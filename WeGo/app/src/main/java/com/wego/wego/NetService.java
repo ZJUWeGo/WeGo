@@ -1,5 +1,7 @@
 package com.wego.wego;
 
+import android.os.Bundle;
+
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -41,6 +43,29 @@ public class NetService {
         }
         return -1;
     }
+
+    /**
+     * 请求历史订单
+     * @param id
+     * @param password
+     * @return 返回JSON对象
+     */
+    public static JSONObject getHistoryList(int id, String password) throws NoSuchAlgorithmException {
+        String path = "http://101.200.42.170:5000/order-list";
+        Map<String, String> customer = new HashMap<String, String>();
+        customer.put("id", String.valueOf(id));
+        customer.put("password", NetService.encode(password));
+        try {
+            JSONObject jsonObject = new JSONObject(sendRequestByPost(path, customer, "UTF-8"));
+
+            return jsonObject;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
     /**
      * 获取个人信息
      * @param id
@@ -144,7 +169,6 @@ public class NetService {
         while ((line = reader.readLine()) != null) {
             builder.append(line);// 一行行的读取内容并追加到builder中去
         }
-        System.out.println(builder);
         return new String(builder);
     }
 
@@ -183,4 +207,10 @@ public class NetService {
 //        return new String(sha.digest());
         return string;
     }
+
+
+
+
 }
+
+
