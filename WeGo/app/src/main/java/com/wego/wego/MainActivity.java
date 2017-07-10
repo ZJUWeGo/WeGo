@@ -27,8 +27,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
@@ -197,6 +200,8 @@ public class MainActivity extends AppCompatActivity
 
     private List<String> getData() throws InterruptedException, ExecutionException, TimeoutException {
 
+        List<String> data = new ArrayList<String>();
+
         //获取json数组解析出title
         Bundle bundle = new Bundle();
         bundle.putInt("id",this.id);
@@ -207,13 +212,24 @@ public class MainActivity extends AppCompatActivity
         Future future=executorService.submit(callable);
         JSONObject jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);//3s超时
 
+        try {
+            JSONArray list = jsonObject.getJSONArray("data");
+            System.out.println(list);
+            for ( int i = 0; i < list.length(); i ++){
+                JSONObject temp = list.getJSONObject(i);
+
+                String tempString = temp.get("order_time").toString() + "   "+ "金额："+ "￥" +  temp.get("order_price").toString()  + "   "+ temp.get("order_status").toString();
+
+                data.add(tempString);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 //        System.out.println("This is in main thread");
 //        System.out.println(jsonObject);
-        List<String> data = new ArrayList<String>();
-        data.add("2017-7-9 100.00");
-        data.add("2017-7-8 100.00");
-        data.add("2017-7-7 100.00");
-        data.add("2017-7-6 100.00");
+
         return data;
     }
 
@@ -311,9 +327,62 @@ public class MainActivity extends AppCompatActivity
     }
     public void showItem(int arg2)  {
 
+        List<String> data = new ArrayList<String>();
         //获取json数组解析出订单内容
 
-        String[] Items = {"牙膏  1.00￥  3","牙刷  1.00￥  3","牙缸  1.00￥  3"};
+        Bundle bundle = new Bundle();
+        bundle.putInt("id",this.id);
+        bundle.putString("password",this.password);
+        bundle.putInt("order_id",arg2);
+
+        ExecutorService executorService= Executors.newCachedThreadPool();
+        Callable<JSONObject> callable=new NetThread(2,bundle);
+        Future future=executorService.submit(callable);
+        JSONObject jsonObject = null;//3s超时
+        try {
+            jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            JSONArray list = jsonObject.getJSONArray("data");
+            System.out.println(list);
+            for ( int i = 0; i < list.length(); i ++){
+                JSONObject temp = list.getJSONObject(i);
+
+                String unicodeString = temp.get("item_name").toString();
+
+                try {
+                    // Convert from Unicode to UTF-8
+                    byte[] utf8 = unicodeString.getBytes("UTF-8");
+                    // Convert from UTF-8 to Unicode
+                    unicodeString = new String(utf8, "UTF-8");
+                    System.out.println(unicodeString);
+                    } catch (UnsupportedEncodingException e) {
+                }
+
+                String tempString = unicodeString + "   "+ "数量："+  temp.get("item_num").toString();
+
+                data.add(tempString);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String[] Items = new String[data.size()];
+        Object[] arr = data.toArray();
+        for (int i = 0; i < arr.length; i++) {
+            String e = (String) arr[i];
+            Items[i] = e;
+        }
+
+        //String[] Items = {"牙膏  1.00￥  3","牙刷  1.00￥  3","牙缸  1.00￥  3"};
 
         new AlertDialog.Builder(this)
                 .setTitle("订单详情")

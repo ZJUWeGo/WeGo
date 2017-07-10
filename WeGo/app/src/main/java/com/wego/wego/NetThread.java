@@ -32,6 +32,16 @@ public class NetThread implements Callable<JSONObject> {
                     e.printStackTrace();
                 }
                 break;
+            case 2:
+                try {
+                    jsonObject = NetService.getListItems(bundle.getInt("id"),bundle.getString("password"),bundle.getInt("order_id"));
+//                    System.out.print("this is in NetTread, -----");
+//                    System.out.println(jsonObject);
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+
+                break;
         }
         return jsonObject;
     }

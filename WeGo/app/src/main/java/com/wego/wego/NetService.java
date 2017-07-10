@@ -65,6 +65,27 @@ public class NetService {
         return null;
     }
 
+    /**
+     * 请求订单详情
+     * @param id
+     * @param password
+     * @return 返回JSON对象
+     */
+    public static JSONObject getListItems(int id, String password, int order_id) throws NoSuchAlgorithmException {
+        String path = "http://101.200.42.170:5000/order-detail";
+        Map<String, String> customer = new HashMap<String, String>();
+        customer.put("id", String.valueOf(id));
+        customer.put("password", NetService.encode(password));
+        customer.put("order_id", String.valueOf(order_id));
+        try {
+            JSONObject jsonObject = new JSONObject(sendRequestByPost(path, customer, "UTF-8"));
+
+            return jsonObject;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     /**
      * 获取个人信息
