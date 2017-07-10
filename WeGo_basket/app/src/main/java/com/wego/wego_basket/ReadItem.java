@@ -32,9 +32,14 @@ public class ReadItem extends BaseNfcActivity {
         Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         //获取Ndef的实例
         Ndef ndef = Ndef.get(detectedTag);
-        mTagText = ndef.getType() + "\nmaxsize:" + ndef.getMaxSize() + "bytes\n\n";
+        //mTagText = ndef.getType() + "\nmaxsize:" + ndef.getMaxSize() + "bytes\n\n";
         readNfcTag(intent);
+
         mNfcText.setText(mTagText);
+
+        ItemList myItemList = (ItemList)getApplication();
+        Item myItem = new Item(mTagText);
+        myItemList.addItem(myItem);
     }
 
     private void readNfcTag(Intent intent){
@@ -54,7 +59,8 @@ public class ReadItem extends BaseNfcActivity {
                 if (msgs != null) {
                     NdefRecord record = msgs[0].getRecords()[0];
                     String textRecord = parseTextRecord(record);
-                    mTagText += textRecord + "\n\ntext\n" + contentSize + " bytes";
+                    //mTagText += textRecord + "\n\ntext\n" + contentSize + " bytes";
+                    mTagText = textRecord;
                 }
             } catch (Exception e) {
             }
