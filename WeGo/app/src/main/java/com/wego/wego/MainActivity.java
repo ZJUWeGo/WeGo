@@ -27,6 +27,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -179,6 +182,11 @@ public class MainActivity extends AppCompatActivity
     private List<String> getData(){
 
         //获取json数组解析出title
+        Bundle bundle = new Bundle();
+        bundle.putInt("id",this.id);
+        bundle.putString("password",this.password);
+        Thread thread = new NetThread(1,bundle);
+        thread.start();
 
         List<String> data = new ArrayList<String>();
         data.add("2017-7-9 100.00");
@@ -293,7 +301,5 @@ public class MainActivity extends AppCompatActivity
                 .show();
 
     }
-
-
 
 }

@@ -1,5 +1,7 @@
 package com.wego.wego;
 
+import android.os.Bundle;
+
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -167,7 +169,6 @@ public class NetService {
         while ((line = reader.readLine()) != null) {
             builder.append(line);// 一行行的读取内容并追加到builder中去
         }
-        System.out.println(builder);
         return new String(builder);
     }
 
@@ -206,4 +207,10 @@ public class NetService {
 //        return new String(sha.digest());
         return string;
     }
+
+
+
+
 }
+
+
