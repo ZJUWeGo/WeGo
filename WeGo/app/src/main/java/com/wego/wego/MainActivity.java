@@ -25,10 +25,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +55,8 @@ public class MainActivity extends AppCompatActivity
 
     private ListView listView;
 
-    public void run() {//display the username
+    //display the username
+    public void run() {
 
         Intent intent = getIntent();
 
@@ -79,6 +85,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
+        //调用run函数
         activityHandler.post(MainActivity.this);
 
 
@@ -110,20 +117,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -132,6 +126,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        //个人信息
         if (id == R.id.nav_personInfo) {
 
             System.out.println("This is in personInfo, and my name is ");
@@ -149,7 +144,7 @@ public class MainActivity extends AppCompatActivity
 
             });
 
-
+        //历史订单
         } else if (id == R.id.nav_historyList) {
 
 
@@ -180,6 +175,7 @@ public class MainActivity extends AppCompatActivity
             });
 
         }
+        //返回
         else if (id == R.id.nav_home) {
 
             listView = (ListView)findViewById(R.id.mylistview);
@@ -195,7 +191,11 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+
+    //获取历史订单列表
     private List<String> getData() throws InterruptedException, ExecutionException, TimeoutException {
+
+        List<String> data = new ArrayList<String>();
 
         //获取json数组解析出title
         Bundle bundle = new Bundle();
@@ -207,56 +207,110 @@ public class MainActivity extends AppCompatActivity
         Future future=executorService.submit(callable);
         JSONObject jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);//3s超时
 
+        try {
+            JSONArray list = jsonObject.getJSONArray("data");
+            System.out.println(list);
+            for ( int i = 0; i < list.length(); i ++){
+                JSONObject temp = list.getJSONObject(i);
+
+                String tempString = temp.get("order_time").toString() + "   "+ "金额："+ "￥" +  temp.get("order_price").toString()  + "   "+ temp.get("order_status").toString();
+
+                data.add(tempString);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 //        System.out.println("This is in main thread");
 //        System.out.println(jsonObject);
-        List<String> data = new ArrayList<String>();
-        data.add("2017-7-9 100.00");
-        data.add("2017-7-8 100.00");
-        data.add("2017-7-7 100.00");
-        data.add("2017-7-6 100.00");
+
         return data;
     }
 
+
+    //获取银行卡信息
     private List<String> getInfo(){
 
         Intent intent = getIntent();
         String Account = intent.getStringExtra("thisName");
 
-        String[] cards = {"400 800 8820","400 800 8821","400 800 8822","添加新银行卡"};
-
-
         List<String> data = new ArrayList<String>();
-        data.add("账号: "+ Account);
-        for (int i = 0; i < cards.length; i++) {
-            if ( i < cards.length - 1)
-                data.add("银行卡" + ( i + 1 ) + ": " + cards[i] );
-            else
-                data.add( cards[i] );
+
+        //获取json数组解析出title
+        Bundle bundle = new Bundle();
+        bundle.putInt("id",this.id);
+        bundle.putString("password",this.password);
+
+        ExecutorService executorService= Executors.newCachedThreadPool();
+        Callable<JSONObject> callable=new NetThread(3,bundle);
+        Future future=executorService.submit(callable);
+        JSONObject jsonObject = null;//3s超时
+        try {
+            jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
         }
+
+        try {
+            JSONArray list = jsonObject.getJSONArray("data");
+            System.out.println(list);
+            for ( int i = 0; i < list.length(); i ++){
+                JSONObject temp = list.getJSONObject(i);
+
+                String tempString = "银行卡" + i + "：" + temp.get("card_id").toString();
+
+                data.add(tempString);
+            }
+                data.add("添加新银行卡");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
         return data;
     }
 
+    //清空界面
     private List<String> clearData(){
 
         List<String> data = new ArrayList<String>();
         return data;
     }
 
+    //银行卡删除和添加操作
     public void showInfo(int arg2){
 
-        String[] cards = {"400 800 8820","400 800 8821","400 800 8822"," "};
+        final int Current_id = this.id;
+        final String Current_password = this.password;
 
 
-        if (( arg2 != cards.length ) && ( arg2 != 0 ))  {
+        List<String> cardsList = getInfo();
+
+        String[] cards = new String[cardsList.size()];
+        Object[] arr = cardsList.toArray();
+        for (int i = 0; i < arr.length; i++) {
+            String e = (String) arr[i];
+            cards[i] = e;
+        }
+
+
+        if ( arg2 != cards.length - 1 )   {
 
             final TextView tv = new TextView(this);
-            SpannableString msp = new SpannableString(cards[arg2 - 1]);
-            int length = cards[arg2 - 1].length();
+            SpannableString msp = new SpannableString(cards[arg2]);
+            int length = cards[arg2].length();
             msp.setSpan(new RelativeSizeSpan(2.0f), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             msp.setSpan(new ForegroundColorSpan(Color.MAGENTA), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);  //设置前景色为洋红色
 
             tv.setText(msp);
-            final String deletedCard = cards[arg2 - 1];
+            final String deletedCard = cards[arg2];
             new AlertDialog.Builder(this)
                     .setTitle("银行卡删除")
                     .setView(tv)
@@ -267,6 +321,28 @@ public class MainActivity extends AppCompatActivity
                             //发送删除请求
                             System.out.println("删除银行卡：" + deletedCard);
 
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("id",Current_id);
+                            bundle.putString("password",Current_password);
+                            bundle.putString("card_id",tv.getText().toString());
+
+
+                            ExecutorService executorService= Executors.newCachedThreadPool();
+                            Callable<JSONObject> callable=new NetThread(5,bundle);
+                            Future future=executorService.submit(callable);
+                            JSONObject jsonObject = null;//3s超时
+                            try {
+                                jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            } catch (TimeoutException e) {
+                                e.printStackTrace();
+                            }
+
+                            //提示添加成功
+                            System.out.println(jsonObject);
 
                         }
                     })
@@ -280,19 +356,71 @@ public class MainActivity extends AppCompatActivity
                     })
                     .show();
         }
-        else if ( arg2 != 0 ){
-            final EditText tv = new EditText(this);
-            tv.setText(" ");
+        else {
+
+
+            TableLayout myTable = new TableLayout(this);
+
+
+            final EditText tv1 = new EditText(this);
+            tv1.setText("卡号");
+            final EditText tv2 = new EditText(this);
+            tv2.setText("联系电话");
+
+            myTable.addView(tv1);
+            myTable.addView(tv2);
 
             new AlertDialog.Builder(this)
                     .setTitle("银行卡添加")
-                    .setView(tv)
+                    .setView(myTable)
                     .setPositiveButton("添加", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
-                            //发送删除请求
-                            System.out.println("添加银行卡：" + tv.getText().toString());
+                            //发送添加请求
+                            System.out.println("添加银行卡：" + tv1.getText().toString());
+                            System.out.println("联系电话：" + tv2.getText().toString());
+
+
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("id",Current_id);
+                            bundle.putString("password",Current_password);
+                            bundle.putString("card_id",tv1.getText().toString());
+                            bundle.putString("phone_number",tv2.getText().toString());
+
+
+                            ExecutorService executorService= Executors.newCachedThreadPool();
+                            Callable<JSONObject> callable=new NetThread(4,bundle);
+                            Future future=executorService.submit(callable);
+                            JSONObject jsonObject = null;//3s超时
+                            try {
+                                jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            } catch (TimeoutException e) {
+                                e.printStackTrace();
+                            }
+
+                            //提示添加成功
+                            try {
+                                System.out.println(jsonObject.get("status").toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            try {
+                                if (jsonObject.get("status") == "true"){
+                                    Toast.makeText(MainActivity.this,"添加成功", Toast.LENGTH_SHORT).show();
+
+                                }else {
+                                    Toast.makeText(MainActivity.this,"添加失败", Toast.LENGTH_SHORT).show();
+
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
 
 
                         }
@@ -309,11 +437,61 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+
+    //获取订单详情
     public void showItem(int arg2)  {
 
+        List<String> data = new ArrayList<String>();
         //获取json数组解析出订单内容
 
-        String[] Items = {"牙膏  1.00￥  3","牙刷  1.00￥  3","牙缸  1.00￥  3"};
+        Bundle bundle = new Bundle();
+        bundle.putInt("id",this.id);
+        bundle.putString("password",this.password);
+        bundle.putInt("order_id",arg2);
+
+        ExecutorService executorService= Executors.newCachedThreadPool();
+        Callable<JSONObject> callable=new NetThread(2,bundle);
+        Future future=executorService.submit(callable);
+        JSONObject jsonObject = null;//3s超时
+        try {
+            jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            JSONArray list = jsonObject.getJSONArray("data");
+            System.out.println(list);
+            for ( int i = 0; i < list.length(); i ++){
+                JSONObject temp = list.getJSONObject(i);
+
+                String unicodeString = temp.get("item_name").toString();
+
+                String utf8String = unicodeToUtf8(unicodeString);
+
+                System.out.println(utf8String);
+
+                String tempString = utf8String + "   "+ "数量："+  temp.get("item_num").toString();
+
+                data.add(tempString);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String[] Items = new String[data.size()];
+        Object[] arr = data.toArray();
+        for (int i = 0; i < arr.length; i++) {
+            String e = (String) arr[i];
+            Items[i] = e;
+        }
+
+        //String[] Items = {"牙膏  1.00￥  3","牙刷  1.00￥  3","牙缸  1.00￥  3"};
 
         new AlertDialog.Builder(this)
                 .setTitle("订单详情")
@@ -323,4 +501,76 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+
+    /**
+     * unicode 转换成 utf-8
+     * @author fanhui
+     * 2007-3-15
+     * @param theString
+     * @return
+     */
+    public static String unicodeToUtf8(String theString) {
+        char aChar;
+        int len = theString.length();
+        StringBuffer outBuffer = new StringBuffer(len);
+        for (int x = 0; x < len;) {
+            aChar = theString.charAt(x++);
+            if (aChar == '\\') {
+                aChar = theString.charAt(x++);
+                if (aChar == 'u') {
+                    // Read the xxxx
+                    int value = 0;
+                    for (int i = 0; i < 4; i++) {
+                        aChar = theString.charAt(x++);
+                        switch (aChar) {
+                            case '0':
+                            case '1':
+                            case '2':
+                            case '3':
+                            case '4':
+                            case '5':
+                            case '6':
+                            case '7':
+                            case '8':
+                            case '9':
+                                value = (value << 4) + aChar - '0';
+                                break;
+                            case 'a':
+                            case 'b':
+                            case 'c':
+                            case 'd':
+                            case 'e':
+                            case 'f':
+                                value = (value << 4) + 10 + aChar - 'a';
+                                break;
+                            case 'A':
+                            case 'B':
+                            case 'C':
+                            case 'D':
+                            case 'E':
+                            case 'F':
+                                value = (value << 4) + 10 + aChar - 'A';
+                                break;
+                            default:
+                                throw new IllegalArgumentException(
+                                        "Malformed   \\uxxxx   encoding.");
+                        }
+                    }
+                    outBuffer.append((char) value);
+                } else {
+                    if (aChar == 't')
+                        aChar = '\t';
+                    else if (aChar == 'r')
+                        aChar = '\r';
+                    else if (aChar == 'n')
+                        aChar = '\n';
+                    else if (aChar == 'f')
+                        aChar = '\f';
+                    outBuffer.append(aChar);
+                }
+            } else
+                outBuffer.append(aChar);
+        }
+        return outBuffer.toString();
+    }
 }
