@@ -32,6 +32,13 @@ import org.json.JSONObject;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Runnable{
@@ -150,7 +157,16 @@ public class MainActivity extends AppCompatActivity
 //            startActivity(i);
 
             listView = (ListView)findViewById(R.id.mylistview);
-            listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,getData()));
+            try {
+                listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,getData()));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (TimeoutException e) {
+                System.out.println("out of time");
+                e.printStackTrace();
+            }
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
 
@@ -179,15 +195,20 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private List<String> getData(){
+    private List<String> getData() throws InterruptedException, ExecutionException, TimeoutException {
 
         //获取json数组解析出title
         Bundle bundle = new Bundle();
         bundle.putInt("id",this.id);
         bundle.putString("password",this.password);
-        Thread thread = new NetThread(1,bundle);
-        thread.start();
 
+        ExecutorService executorService= Executors.newCachedThreadPool();
+        Callable<JSONObject> callable=new NetThread(1,bundle);
+        Future future=executorService.submit(callable);
+        JSONObject jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);//3s超时
+
+//        System.out.println("This is in main thread");
+//        System.out.println(jsonObject);
         List<String> data = new ArrayList<String>();
         data.add("2017-7-9 100.00");
         data.add("2017-7-8 100.00");

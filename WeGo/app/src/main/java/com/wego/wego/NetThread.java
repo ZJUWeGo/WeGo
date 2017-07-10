@@ -1,35 +1,38 @@
 package com.wego.wego;
 
 import android.os.Bundle;
-
 import org.json.JSONObject;
-
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.Callable;
 
 /**
  * Created by Wu on 2017/7/10.
  */
 
-public class NetThread extends Thread {
+public class NetThread implements Callable<JSONObject> {
     private int type;
     private Bundle bundle;
+    private JSONObject jsonObject;
 
-
-    public NetThread(int type, Bundle bundle) {
+    NetThread(int type, Bundle bundle) {
         this.type = type;
         this.bundle = bundle;
     }
 
-    public void run() {
+    @Override
+    public JSONObject call() throws Exception {
+
         switch (this.type){
             case 1:
                 try {
-                    JSONObject jsonObject = NetService.getHistoryList(bundle.getInt("id"),bundle.getString("password"));
-                    System.out.println(jsonObject);
+                    jsonObject = NetService.getHistoryList(bundle.getInt("id"),bundle.getString("password"));
+//                    System.out.print("this is in NetTread, -----");
+//                    System.out.println(jsonObject);
                 } catch (NoSuchAlgorithmException e) {
                     e.printStackTrace();
                 }
                 break;
         }
+        return jsonObject;
     }
 }
