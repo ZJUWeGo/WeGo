@@ -42,6 +42,33 @@ public class NetThread implements Callable<JSONObject> {
                 }
 
                 break;
+            case 3:
+                try {
+                    jsonObject = NetService.getCards(bundle.getInt("id"),bundle.getString("password"));
+//                    System.out.print("this is in NetTread, -----");
+//                    System.out.println(jsonObject);
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case 4:
+                try {
+                    jsonObject = NetService.addCards(bundle.getInt("id"),bundle.getString("password"),bundle.getString("card_id"),bundle.getString("phone_number"));
+//                    System.out.print("this is in NetTread, -----");
+//                    System.out.println(jsonObject);
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case 5:
+                try {
+                    jsonObject = NetService.deleteCards(bundle.getInt("id"),bundle.getString("password"),bundle.getString("card_id"));
+//                    System.out.print("this is in NetTread, -----");
+//                    System.out.println(jsonObject);
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+                break;
         }
         return jsonObject;
     }

@@ -25,7 +25,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,7 +55,8 @@ public class MainActivity extends AppCompatActivity
 
     private ListView listView;
 
-    public void run() {//display the username
+    //display the username
+    public void run() {
 
         Intent intent = getIntent();
 
@@ -82,6 +85,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
+        //调用run函数
         activityHandler.post(MainActivity.this);
 
 
@@ -113,20 +117,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -135,6 +126,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        //个人信息
         if (id == R.id.nav_personInfo) {
 
             System.out.println("This is in personInfo, and my name is ");
@@ -152,7 +144,7 @@ public class MainActivity extends AppCompatActivity
 
             });
 
-
+        //历史订单
         } else if (id == R.id.nav_historyList) {
 
 
@@ -183,6 +175,7 @@ public class MainActivity extends AppCompatActivity
             });
 
         }
+        //返回
         else if (id == R.id.nav_home) {
 
             listView = (ListView)findViewById(R.id.mylistview);
@@ -198,6 +191,8 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+
+    //获取历史订单列表
     private List<String> getData() throws InterruptedException, ExecutionException, TimeoutException {
 
         List<String> data = new ArrayList<String>();
@@ -233,46 +228,89 @@ public class MainActivity extends AppCompatActivity
         return data;
     }
 
+
+    //获取银行卡信息
     private List<String> getInfo(){
 
         Intent intent = getIntent();
         String Account = intent.getStringExtra("thisName");
 
-        String[] cards = {"400 800 8820","400 800 8821","400 800 8822","添加新银行卡"};
-
-
         List<String> data = new ArrayList<String>();
-        data.add("账号: "+ Account);
-        for (int i = 0; i < cards.length; i++) {
-            if ( i < cards.length - 1)
-                data.add("银行卡" + ( i + 1 ) + ": " + cards[i] );
-            else
-                data.add( cards[i] );
+
+        //获取json数组解析出title
+        Bundle bundle = new Bundle();
+        bundle.putInt("id",this.id);
+        bundle.putString("password",this.password);
+
+        ExecutorService executorService= Executors.newCachedThreadPool();
+        Callable<JSONObject> callable=new NetThread(3,bundle);
+        Future future=executorService.submit(callable);
+        JSONObject jsonObject = null;//3s超时
+        try {
+            jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
         }
+
+        try {
+            JSONArray list = jsonObject.getJSONArray("data");
+            System.out.println(list);
+            for ( int i = 0; i < list.length(); i ++){
+                JSONObject temp = list.getJSONObject(i);
+
+                String tempString = "银行卡" + i + "：" + temp.get("card_id").toString();
+
+                data.add(tempString);
+            }
+                data.add("添加新银行卡");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
         return data;
     }
 
+    //清空界面
     private List<String> clearData(){
 
         List<String> data = new ArrayList<String>();
         return data;
     }
 
+    //银行卡删除和添加操作
     public void showInfo(int arg2){
 
-        String[] cards = {"400 800 8820","400 800 8821","400 800 8822"," "};
+        final int Current_id = this.id;
+        final String Current_password = this.password;
 
 
-        if (( arg2 != cards.length ) && ( arg2 != 0 ))  {
+        List<String> cardsList = getInfo();
+
+        String[] cards = new String[cardsList.size()];
+        Object[] arr = cardsList.toArray();
+        for (int i = 0; i < arr.length; i++) {
+            String e = (String) arr[i];
+            cards[i] = e;
+        }
+
+
+        if ( arg2 != cards.length - 1 )   {
 
             final TextView tv = new TextView(this);
-            SpannableString msp = new SpannableString(cards[arg2 - 1]);
-            int length = cards[arg2 - 1].length();
+            SpannableString msp = new SpannableString(cards[arg2]);
+            int length = cards[arg2].length();
             msp.setSpan(new RelativeSizeSpan(2.0f), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             msp.setSpan(new ForegroundColorSpan(Color.MAGENTA), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);  //设置前景色为洋红色
 
             tv.setText(msp);
-            final String deletedCard = cards[arg2 - 1];
+            final String deletedCard = cards[arg2];
             new AlertDialog.Builder(this)
                     .setTitle("银行卡删除")
                     .setView(tv)
@@ -283,6 +321,28 @@ public class MainActivity extends AppCompatActivity
                             //发送删除请求
                             System.out.println("删除银行卡：" + deletedCard);
 
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("id",Current_id);
+                            bundle.putString("password",Current_password);
+                            bundle.putString("card_id",tv.getText().toString());
+
+
+                            ExecutorService executorService= Executors.newCachedThreadPool();
+                            Callable<JSONObject> callable=new NetThread(5,bundle);
+                            Future future=executorService.submit(callable);
+                            JSONObject jsonObject = null;//3s超时
+                            try {
+                                jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            } catch (TimeoutException e) {
+                                e.printStackTrace();
+                            }
+
+                            //提示添加成功
+                            System.out.println(jsonObject);
 
                         }
                     })
@@ -296,19 +356,71 @@ public class MainActivity extends AppCompatActivity
                     })
                     .show();
         }
-        else if ( arg2 != 0 ){
-            final EditText tv = new EditText(this);
-            tv.setText(" ");
+        else {
+
+
+            TableLayout myTable = new TableLayout(this);
+
+
+            final EditText tv1 = new EditText(this);
+            tv1.setText("卡号");
+            final EditText tv2 = new EditText(this);
+            tv2.setText("联系电话");
+
+            myTable.addView(tv1);
+            myTable.addView(tv2);
 
             new AlertDialog.Builder(this)
                     .setTitle("银行卡添加")
-                    .setView(tv)
+                    .setView(myTable)
                     .setPositiveButton("添加", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
-                            //发送删除请求
-                            System.out.println("添加银行卡：" + tv.getText().toString());
+                            //发送添加请求
+                            System.out.println("添加银行卡：" + tv1.getText().toString());
+                            System.out.println("联系电话：" + tv2.getText().toString());
+
+
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("id",Current_id);
+                            bundle.putString("password",Current_password);
+                            bundle.putString("card_id",tv1.getText().toString());
+                            bundle.putString("phone_number",tv2.getText().toString());
+
+
+                            ExecutorService executorService= Executors.newCachedThreadPool();
+                            Callable<JSONObject> callable=new NetThread(4,bundle);
+                            Future future=executorService.submit(callable);
+                            JSONObject jsonObject = null;//3s超时
+                            try {
+                                jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            } catch (TimeoutException e) {
+                                e.printStackTrace();
+                            }
+
+                            //提示添加成功
+                            try {
+                                System.out.println(jsonObject.get("status").toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            try {
+                                if (jsonObject.get("status") == "true"){
+                                    Toast.makeText(MainActivity.this,"添加成功", Toast.LENGTH_SHORT).show();
+
+                                }else {
+                                    Toast.makeText(MainActivity.this,"添加失败", Toast.LENGTH_SHORT).show();
+
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
 
 
                         }
@@ -325,6 +437,8 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+
+    //获取订单详情
     public void showItem(int arg2)  {
 
         List<String> data = new ArrayList<String>();
