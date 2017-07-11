@@ -75,6 +75,14 @@ public class MainActivity extends BaseNfcActivity implements NfcAdapter.CreateNd
                 startActivity(intent);
             }
         });
+        final FloatingActionButton deleteBtn = (FloatingActionButton) findViewById(R.id.deleteItemBtn);
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this,DeleteItem.class);
+                startActivity(intent);
+            }
+        });
 
 
         mInfoText = (TextView) findViewById(R.id.textView);

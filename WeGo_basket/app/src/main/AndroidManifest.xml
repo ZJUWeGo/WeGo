@@ -17,9 +17,9 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/MyTheme">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop">
@@ -28,20 +28,25 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!--<intent-filter>-->
-                <!--<action android:name="android.nfc.action.NDEF_DISCOVERED" />-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.nfc.action.NDEF_DISCOVERED" /> -->
 
-                <!--<category android:name="android.intent.category.DEFAULT" />-->
 
-                <!--<data android:mimeType="application/com.wego.wego_basket" />-->
-            <!--</intent-filter>-->
+            <!-- <category android:name="android.intent.category.DEFAULT" /> -->
+
+
+            <!-- <data android:mimeType="application/com.wego.wego_basket" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".ReadItem"
-            android:launchMode="singleTop"></activity>
+            android:launchMode="singleTop" />
         <activity
             android:name=".WriteText"
-            android:launchMode="singleTop"></activity>
+            android:launchMode="singleTop" />
+        <activity android:name=".DeleteItem"
+            android:launchMode="singleTop" />
+
     </application>
 
 </manifest>

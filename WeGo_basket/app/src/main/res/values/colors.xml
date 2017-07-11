@@ -4,4 +4,12 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorWhite">#FFFFFF</color>
+
+
+    <color name="mycolorPrimary">#757575</color>
+    <color name="mycolorAccent">#ff5c8d</color>
+    <color name="mycolorPrimaryDark">#494949</color>
+    <color name="mytextColorPrimary">#FFFFFF</color>
+    <color name="mywindowBackground">#f5f5f6</color>
+
 </resources>

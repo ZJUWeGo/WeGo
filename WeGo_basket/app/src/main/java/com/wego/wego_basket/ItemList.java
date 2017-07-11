@@ -2,6 +2,7 @@ package com.wego.wego_basket;
 
 import android.app.Application;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,13 +13,12 @@ import java.util.List;
  */
 
 public class ItemList extends Application {
-    //private boolean is_active_;
+
     private List<Item> itemlist = new ArrayList();
 
     @Override
     public void onCreate() {
         super.onCreate();
-        //setIsActive(true);
     }
 
     public void addItem(Item item) {
@@ -29,13 +29,37 @@ public class ItemList extends Application {
             int num = existItem.getItemQuantity();
             num = num + 1;
             existItem.setItemQuantity(num);
-            System.out.println(existItem.getItemName()+"!!!"+existItem.getItemQuantity());
+            //System.out.println(existItem.getItemName()+"!!!"+existItem.getItemQuantity());
+            Toast.makeText(getApplicationContext(), "添加成功!"+existItem.getItemName()+"共有"+existItem.getItemQuantity()+"件", Toast.LENGTH_SHORT).show();
         }
         else{
-            System.out.println("New item!!");
+            //System.out.println("New item!!");
+            Toast.makeText(getApplicationContext(), "添加成功!"+item.getItemName(), Toast.LENGTH_SHORT).show();
             itemlist.add(item);
         }
+    }
 
+    public void deleteItem(Item item) {
+        if(itemlist.contains(item)){
+            //System.out.println("找到了这个： "+ item.getItemName());
+            Item existItem = itemlist.get(itemlist.indexOf(item));
+            int num = existItem.getItemQuantity();
+            if(num > 1) {
+                num -= 1;
+                existItem.setItemQuantity(num);
+                //System.out.println(existItem.getItemName()+"!!!"+existItem.getItemQuantity());
+                Toast.makeText(getApplicationContext(), "删除成功!"+item.getItemName()+"还剩"+existItem.getItemQuantity()+"件", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                //System.out.println("Goodbye, myfriend "+ item.getItemName());
+                Toast.makeText(getApplicationContext(), "GG,Myfriend "+ item.getItemName(), Toast.LENGTH_SHORT).show();
+                itemlist.remove(existItem);
+            }
+        }
+        else {
+            //System.out.println("兄弟，你没刷这个商品："+ item.getItemName());
+            Toast.makeText(getApplicationContext(), "兄der，购物车中没有"+item.getItemName(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public String getItem(){
@@ -56,11 +80,4 @@ public class ItemList extends Application {
         }
     }
 
-//    public boolean getIsActive() {
-//        return is_active_;
-//    }
-//
-//    public void setIsActive(boolean is_active) {
-//        is_active_ = is_active;
-//    }
 }

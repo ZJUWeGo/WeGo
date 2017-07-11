@@ -8,13 +8,27 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="MyTheme" parent="Theme.AppCompat.Light">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/mycolorPrimary</item>
+        <item name="colorPrimaryDark">@color/mycolorPrimaryDark</item>
+        <item name="colorAccent">@color/mycolorPrimaryDark</item>
+        <item name="android:textColorPrimary">@color/mytextColorPrimary</item>
+        <item name="android:windowBackground">@color/mywindowBackground</item>
+
+    </style>
+
     <style name="MyButton" parent="Theme.AppCompat.Light">
         <item name="colorControlHighlight">#FFFFFF</item>
         <item name="colorButtonNormal">#B8B9B0</item>
     </style>
 
-    <style name="MyFloatActionButton" parents="Theme.Appcompat.Light">
+    <style name="AddItemBtn" parents="Theme.Appcompat.Light">
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="DeleteItemBtn" parents="Theme.Appcompat.Light">
+        <item name="colorAccent">#E0E0E0</item>
     </style>
 
 </resources>
