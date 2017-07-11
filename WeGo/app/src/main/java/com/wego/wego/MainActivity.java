@@ -12,6 +12,7 @@ import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
+import android.view.Gravity;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,8 +24,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,6 +58,10 @@ public class MainActivity extends AppCompatActivity
     public Handler activityHandler =  new Handler();
 
     private ListView listView;
+
+    DrawerLayout drawer;
+
+    Button myButton;
 
     //display the username
     public void run() {
@@ -90,14 +98,36 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        myButton = (Button) findViewById(R.id.myButton);
+        myButton.setText("支付");
+        myButton.setTextSize(24);
+        LinearLayout.LayoutParams btParams = new LinearLayout.LayoutParams(500,500);
+        btParams.width = 500;
+        btParams.height = 500;
+        btParams.topMargin = -1200;
+        btParams.gravity = Gravity.CENTER_HORIZONTAL;
+        myButton.setLayoutParams(btParams);
+        myButton.setOnClickListener(new Button.OnClickListener(){//创建监听
+            public void onClick(View v) {
+
+                System.out.println("ahhhhhhh");
+            }
+
+        });
+
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+
+
     }
 
     @Override
@@ -123,11 +153,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
 
+
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         //个人信息
         if (id == R.id.nav_personInfo) {
+
+            AddorDelete(2);
 
             System.out.println("This is in personInfo, and my name is ");
             System.out.println(email);
@@ -148,8 +181,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_historyList) {
 
 
-//            Intent i = new Intent(AccountActivity.this, mylistActivity.class);
-//            startActivity(i);
+            AddorDelete(2);
 
             listView = (ListView)findViewById(R.id.mylistview);
             try {
@@ -181,8 +213,7 @@ public class MainActivity extends AppCompatActivity
             listView = (ListView)findViewById(R.id.mylistview);
             listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,clearData()));
 
-
-
+            AddorDelete(1);
 
         }
 
@@ -192,6 +223,37 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    private void AddorDelete(int argu){
+
+
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        if (argu == 1) {
+
+            myButton = (Button) findViewById(R.id.myButton);
+
+            LinearLayout.LayoutParams btParams = new LinearLayout.LayoutParams(500,500);
+            btParams.width = 500;
+            btParams.height = 500;
+            btParams.topMargin = -1200;
+            btParams.gravity = Gravity.CENTER_HORIZONTAL;
+            myButton.setLayoutParams(btParams);
+
+        }
+        else {
+
+            myButton = (Button) findViewById(R.id.myButton);
+
+            LinearLayout.LayoutParams btParams = new LinearLayout.LayoutParams(500,500);
+            btParams.width = 500;
+            btParams.height = 500;
+            btParams.topMargin = 400;
+            btParams.gravity = Gravity.CENTER_HORIZONTAL;
+            myButton.setLayoutParams(btParams);
+        }
+        drawer.invalidate();
+
+    }
     //获取历史订单列表
     private List<String> getData() throws InterruptedException, ExecutionException, TimeoutException {
 

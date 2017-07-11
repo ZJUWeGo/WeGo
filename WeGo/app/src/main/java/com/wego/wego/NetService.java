@@ -139,7 +139,7 @@ public class NetService {
      * @return 返回JSON对象
      */
     public static JSONObject deleteCards(int id, String password, String card_id) throws NoSuchAlgorithmException {
-        String path = "http://101.200.42.170:5000/delete-card";
+        String path = "http://101.200.42.170:5000/remove-card";
         Map<String, String> customer = new HashMap<String, String>();
         customer.put("id", String.valueOf(id));
         customer.put("password", NetService.encode(password));
