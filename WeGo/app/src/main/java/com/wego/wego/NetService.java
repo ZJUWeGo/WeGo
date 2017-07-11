@@ -2,6 +2,7 @@ package com.wego.wego;
 
 import android.os.Bundle;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -20,6 +21,27 @@ import java.util.Map;
  * Created by Wu on 2017/7/8.
  */
 public class NetService {
+
+    /**
+     * 发送订单列表
+     * @param jsonArray
+     * @return 是否成功
+     */
+    public static JSONObject sendItemList(int id, String password , String jsonArray) throws NoSuchAlgorithmException {
+        String path = "http://101.200.42.170:5000/add-order";
+        Map<String, String> customer = new HashMap<String, String>();
+        customer.put("id", String.valueOf(id));
+        customer.put("password", NetService.encode(password));
+        customer.put("itemList", jsonArray);
+        System.out.println(customer);
+        try {
+            JSONObject jsonObject = new JSONObject(sendRequestByPost(path, customer, "UTF-8"));
+            return jsonObject;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     /**
      * 登录验证

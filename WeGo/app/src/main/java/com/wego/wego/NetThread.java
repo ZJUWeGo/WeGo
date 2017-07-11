@@ -69,6 +69,15 @@ public class NetThread implements Callable<JSONObject> {
                     e.printStackTrace();
                 }
                 break;
+            case 6://发送订单列表
+                try {
+                    jsonObject = NetService.sendItemList(bundle.getInt("id"),bundle.getString("password"),bundle.getString("itemList"));
+//                    System.out.print("this is in NetTread, -----");
+//                    System.out.println(jsonObject);
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+                break;
         }
         return jsonObject;
     }

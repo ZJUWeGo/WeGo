@@ -40,6 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wego.wego.Base.BaseNfcActivity;
+import com.wego.wego.Item.ItemList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -134,9 +135,32 @@ public class MainActivity extends BaseNfcActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        mTagText = "神奇笔记本-2001-10.56*2&罗技G502-101-399.5*1&";
+        ItemList itemList = new ItemList(mTagText);
+        try {
+            System.out.println(itemList.getJsonArray());
+            //获取json数组解析出title
+            Bundle bundle = new Bundle();
+            bundle.putInt("id",1);
+            bundle.putString("password","1234567890");
+            bundle.putString("itemList",itemList.getJsonArray().toString());
 
-
-
+            ExecutorService executorService= Executors.newCachedThreadPool();
+            Callable<JSONObject> callable=new NetThread(6,bundle);
+            Future future=executorService.submit(callable);
+            try {
+                JSONObject jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);//3s超时
+                System.out.println(jsonObject.getBoolean("status"));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -704,6 +728,33 @@ public class MainActivity extends BaseNfcActivity
         Ndef ndef = Ndef.get(detectedTag);
         readNfcTag(intent);
         System.out.println("收到了！！！！！！"+mTagText);
+        //神奇笔记本-2001-10.56*2&罗技G502-101-399.5*1&
+//        mTagText = "神奇笔记本-2001-10.56*2&罗技G502-101-399.5*1&";
+        ItemList itemList = new ItemList(mTagText);
+        try {
+            System.out.println(itemList.getJsonArray());
+            //获取json数组解析出title
+            Bundle bundle = new Bundle();
+            bundle.putInt("id",this.id);
+            bundle.putString("password",this.password);
+            bundle.putString("itemList",itemList.getJsonArray().toString());
+
+            ExecutorService executorService= Executors.newCachedThreadPool();
+            Callable<JSONObject> callable=new NetThread(6,bundle);
+            Future future=executorService.submit(callable);
+            try {
+                JSONObject jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);//3s超时
+                System.out.println(jsonObject.getBoolean("status"));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void readNfcTag(Intent intent){
