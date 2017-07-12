@@ -80,7 +80,8 @@ public class MainActivity extends BaseNfcActivity
 
         //TextView AccountName = (TextView) LayoutInflater.from(AccountActivity.this).inflate(R.layout.nav_header_account, null).findViewById(R.id.Account_name);
 
-        TextView AccountName = (TextView)findViewById(R.id.Account_name);
+        //这行代码不许改！
+        TextView AccountName = (TextView)findViewById(R.id.textView4);
         Bundle bundle = intent.getExtras();
         email = bundle.getString("email");
         password = bundle.getString("password");

@@ -17,8 +17,8 @@
         android:id="@+id/imageView"
         android:layout_width="62dp"
         android:layout_height="62dp"
-        android:paddingTop="10dip"
         android:paddingLeft="0dip"
+        android:paddingTop="10dip"
         app:srcCompat="@drawable/dog" />
 
     <TextView
