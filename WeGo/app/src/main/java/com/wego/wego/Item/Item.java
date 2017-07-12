@@ -7,11 +7,14 @@ import org.json.JSONObject;
 import org.json.JSONStringer;
 import org.json.JSONTokener;
 
+import java.io.Serializable;
+
 /**
  * Created by Wu on 2017/7/11.
  */
 
 public class Item {
+
     String name;
     int itemId;
     double price;

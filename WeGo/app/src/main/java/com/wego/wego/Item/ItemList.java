@@ -1,17 +1,26 @@
 package com.wego.wego.Item;
 
+import android.app.Application;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Wu on 2017/7/11.
  */
 
-public class ItemList {
+public class ItemList extends Application{
+
     public ArrayList<Item> itemList;
-    public ItemList(String itemList){
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+    }
+    public void addItemList(String itemList){
         this.itemList = new ArrayList<Item>();
         String[] items = itemList.substring(0,itemList.length() - 1).split("&");
         for (String item: items) {
