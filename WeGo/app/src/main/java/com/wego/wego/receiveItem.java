@@ -13,11 +13,19 @@ import com.wego.wego.Item.ItemList;
 import com.wego.wego.Item.ItemListAapter;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class receiveItem extends AppCompatActivity {
 
@@ -29,7 +37,16 @@ public class receiveItem extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receive_item);
 
+        final Bundle bundle = this.getIntent().getExtras();
+
         ItemList itemList = (ItemList)getApplication();
+
+        try {
+            bundle.putString("itemList",itemList.getJsonArray().toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
         mListViewArray = (ListView)findViewById(R.id.itemListView);
         LayoutInflater inflater = getLayoutInflater();
@@ -44,7 +61,23 @@ public class receiveItem extends AppCompatActivity {
         payBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 System.out.println("我要开始支付了！！！！！");
+                ExecutorService executorService= Executors.newCachedThreadPool();
+                Callable<JSONObject> callable=new NetThread(6,bundle);
+                Future future=executorService.submit(callable);
+                try {
+                    JSONObject jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);//3s超时
+                    System.out.println(jsonObject.getBoolean("status"));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (TimeoutException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
