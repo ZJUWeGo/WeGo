@@ -38,7 +38,7 @@ public class receiveItem extends AppCompatActivity {
         setContentView(R.layout.activity_receive_item);
 
         final Bundle bundle = this.getIntent().getExtras();
-
+        System.out.println("Bundle！！！！！"+bundle);
         ItemList itemList = (ItemList)getApplication();
 
         try {
@@ -67,7 +67,7 @@ public class receiveItem extends AppCompatActivity {
                 Callable<JSONObject> callable=new NetThread(6,bundle);
                 Future future=executorService.submit(callable);
                 try {
-                    JSONObject jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);//3s超时
+                    JSONObject jsonObject = (JSONObject) future.get(10000, TimeUnit.MILLISECONDS);//3s超时
                     System.out.println(jsonObject.getBoolean("status"));
                 } catch (InterruptedException e) {
                     e.printStackTrace();

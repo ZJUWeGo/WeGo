@@ -734,7 +734,7 @@ public class MainActivity extends BaseNfcActivity
         bundle.putInt("id",this.id);
         bundle.putString("password",this.password);
         Intent intent_receiveItem = new Intent(MainActivity.this,receiveItem.class);
-        intent.putExtras(bundle);
+        intent_receiveItem.putExtras(bundle);
         startActivity(intent_receiveItem);
 
 //        try {

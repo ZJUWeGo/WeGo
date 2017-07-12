@@ -29,17 +29,15 @@
         android:id="@+id/myButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:layout_gravity="center"
+        android:background="@drawable/bg_special_disease_circle"
         android:text="@string/payButtonText"
         android:textColor="@color/colorWhite"
         android:textSize="@dimen/payButtonTextSize"
-        android:background="@drawable/bg_special_disease_circle"
-        tools:layout_editor_absoluteY="166dp"
         tools:layout_editor_absoluteX="103dp"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
-
-
+        tools:layout_editor_absoluteY="166dp" />
 
 
 </LinearLayout>
