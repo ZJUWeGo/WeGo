@@ -235,7 +235,7 @@ public class MainActivity extends BaseNfcActivity
                 public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
                                         long arg3) {
                     // TODO Auto-generated method stub
-                    showItem(arg2);
+                    showItem(arg2 + 1 );
                 }
 
             });
@@ -591,6 +591,7 @@ public class MainActivity extends BaseNfcActivity
         bundle.putInt("id",this.id);
         bundle.putString("password",this.password);
         bundle.putInt("order_id",arg2);
+        System.out.println(arg2);
 
         ExecutorService executorService= Executors.newCachedThreadPool();
         Callable<JSONObject> callable=new NetThread(2,bundle);
