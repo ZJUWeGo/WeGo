@@ -10,11 +10,18 @@
     tools:showIn="@layout/app_bar_account">
 
 
-
+    <TextView
+        android:id="@+id/myTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60sp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
     <ListView
         android:id="@+id/mylistview"
-        android:layout_marginTop="60sp"
+        android:layout_marginTop="0sp"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

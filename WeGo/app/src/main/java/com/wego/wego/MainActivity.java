@@ -69,6 +69,8 @@ public class MainActivity extends BaseNfcActivity
 
     private ListView listView;
 
+    private TextView title;
+
     DrawerLayout drawer;
 
     Button myButton;
@@ -291,6 +293,9 @@ public class MainActivity extends BaseNfcActivity
     //获取历史订单列表
     private List<String> getData() throws InterruptedException, ExecutionException, TimeoutException {
 
+        title = (TextView) findViewById(R.id.myTitle);
+        title.setText("            订单时间                                 金额           状态");
+
         List<String> data = new ArrayList<String>();
 
         //获取json数组解析出title
@@ -309,7 +314,15 @@ public class MainActivity extends BaseNfcActivity
             for ( int i = 0; i < list.length(); i ++){
                 JSONObject temp = list.getJSONObject(i);
 
-                String tempString = temp.get("order_time").toString() + "   "+ "金额："+ "￥" +  temp.get("order_price").toString()  + "   "+ temp.get("order_status").toString();
+                int tempLength = 5 - temp.get("order_price").toString().length();
+                System.out.println(tempLength);
+                StringBuffer spaceString = new StringBuffer(" ");
+                while (tempLength > 0) {
+                    spaceString.append("   ");
+                    --tempLength;
+                }
+                System.out.println("spaceString length:"+spaceString.length());
+                String tempString = temp.get("order_time").toString() + "   "+"￥" +  temp.get("order_price").toString() + spaceString.toString() + "   "+ temp.get("order_status").toString();
 
                 data.add(tempString);
             }
@@ -327,6 +340,10 @@ public class MainActivity extends BaseNfcActivity
 
     //获取银行卡信息
     private List<String> getInfo(){
+
+
+        title = (TextView) findViewById(R.id.myTitle);
+        title.setText(" ");
 
         Intent intent = getIntent();
         String Account = intent.getStringExtra("thisName");
@@ -375,6 +392,10 @@ public class MainActivity extends BaseNfcActivity
 
     //清空界面
     private List<String> clearData(){
+
+
+        title = (TextView) findViewById(R.id.myTitle);
+        title.setText(" ");
 
         List<String> data = new ArrayList<String>();
         return data;
