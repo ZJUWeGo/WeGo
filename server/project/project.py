@@ -20,21 +20,25 @@ MY_CARD_ID = '1234567890'
 
 # app配置
 app = Flask(__name__, template_folder='templates')
-app.debug = True
+
 app.secret_key = urandom(24)
 
-if platform.system()=='Linux':
-    app.config['error_log_file_path']='/root/flask/WeGo/server/log/error_log.txt'
-    app.config['op_log_file_path']='/root/flask/WeGo/server/log/op_log.txt'
-    app.config['database_connect']="mysql://root:mysqlpasswd@localhost:3306/WeGo?charset=utf8"
+if platform.system() == 'Linux':
+    app.debug = False
+    app.config['error_log_file_path'] = '/root/flask/WeGo/server/log/error_log.txt'
+    app.config['op_log_file_path'] = '/root/flask/WeGo/server/log/op_log.txt'
+    app.config['database_connect'] = "mysql://root:mysqlpasswd@localhost:3306/WeGo?charset=utf8"
+    app.config['database_connect_bank'] = "mysql://root:mysqlpasswd@localhost:3306/bank?charset=utf8"
+
 else:
+    app.debug = True
     app.config['error_log_file_path'] = 'F:error_log.txt'
     app.config['op_log_file_path'] = 'F:op_log.txt'
-    app.config['database_connect']="mysql://root:@localhost:3306/WeGo?charset=utf8"
+    app.config['database_connect'] = "mysql://root:@localhost:3306/WeGo?charset=utf8"
+    app.config['database_connect_bank'] = "mysql://root:@localhost:3306/bank?charset=utf8"
 
-
-app.config['error_log_file'] = open(app.config['error_log_file_path'],'a+')
-app.config['op_log_file'] = open(app.config['op_log_file_path'],'a+')
+app.config['error_log_file'] = open(app.config['error_log_file_path'], 'a+')
+app.config['op_log_file'] = open(app.config['op_log_file_path'], 'a+')
 
 # 数据库引擎初始化
 Base = declarative_base()
@@ -42,10 +46,8 @@ Base = declarative_base()
 DBEngine = create_engine(app.config['database_connect'])
 DBSession = sessionmaker(bind=DBEngine)
 ## 银行模拟
-DBEngine_bank = create_engine(app.config['database_connect'])
+DBEngine_bank = create_engine(app.config['database_connect_bank'])
 DBSession_bank = sessionmaker(bind=DBEngine_bank)
-
-
 
 defaultEncoding = "utf-8"
 reload(sys)
@@ -90,7 +92,7 @@ class Card(Base):
         :param user_phone: str
         '''
         self.user_id = int(user_id)
-        self.card_id = int(card_id)
+        self.card_id = card_id
         self.user_phone = user_phone
 
 
@@ -155,7 +157,7 @@ class Order(Base):
         self.user_id = user_id
         self.order_price = order_price
         self.order_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-        self.status = 0
+        self.order_status = 0
 
     # 成员函数
     def payed(self):
@@ -204,7 +206,7 @@ class Account(Base):
         :param money:  str
         :param user_phone: str
         '''
-        self.card_id = int(card_id)
+        self.card_id = card_id
         self.user_name = user_name
         self.money = float(money)
         self.user_phone = user_phone
@@ -284,19 +286,54 @@ def addCard(user_id, pwd, card_id, user_phone):
         localSession.query(User).filter(User.user_id == int(user_id),
                                         User.pwd == pwd).one()  # if user not exist, it will throw a except
 
-        if validCard(card_id=int(card_id), user_phone=user_phone) == False:
+        if validCard(card_id=card_id, user_phone=user_phone) == False:
             return False
         print '123'
-        card = Card(user_id=int(user_id), card_id=int(card_id), user_phone=user_phone)
+        card = Card(user_id=int(user_id), card_id=card_id, user_phone=user_phone)
         localSession.add(card)
         localSession.commit()
         localSession.close()
         return True
     except:
+        traceback.print_exc()
         traceback.print_exc(file=app.config['error_log_file'])
         localSession.close()
         return False
 
+def getCardList(user_id,pwd):
+    localSession = DBSession()
+    try:
+        res = []
+        localSession.query(User).filter(User.user_id==int(user_id),User.pwd==pwd).one()
+        cardList = localSession.query(Card).filter(Card.user_id==int(user_id))
+        ''':type :list[Card]'''
+
+        for card in cardList:
+            c = {}
+            c['card_id']= card.card_id
+            c['user_phone'] = card.user_phone
+            res.append(c)
+        localSession.close()
+        return res
+    except:
+        traceback.print_exc()
+        traceback.print_exc(file=app.config['error_log_file'])
+        return None
+
+def removeUserCard(user_id, pwd, card_id):
+    localSession = DBSession()
+    try:
+        localSession.query(User).filter(User.user_id==user_id, User.pwd==pwd).one()
+        card = localSession.query(Card).filter(Card.card_id==card_id, Card.user_id==user_id).one()
+        localSession.delete(card)
+        localSession.commit()
+        localSession.close()
+        return True
+    except:
+        traceback.print_exc()
+        traceback.print_exc(file=app.config['error_log_file'])
+        localSession.close()
+        return False
 
 # 检索用户的订单记录
 def getOrderList(user_id, pwd):
@@ -316,9 +353,13 @@ def getOrderList(user_id, pwd):
             order = {}
             order['order_id'] = item.order_id
             order['user_id'] = item.user_id
-            order['order_time'] = item.order_time
-            order['order_price'] = item.order_price
-            order['order_status'] = item.order_status
+            order['order_time'] = str(item.order_time)
+            print order['order_time']
+            order['order_price'] = str(round(item.order_price, 2))
+            if item.order_status != 1:
+                order['order_status'] = '未支付'
+            else:
+                order['order_status'] = '已支付'
             list.append(order)
         localSession.close()
         return list
@@ -329,7 +370,7 @@ def getOrderList(user_id, pwd):
 
 
 # 增加新订单
-def addNewOrder(user_id, pwd, totalPrice, itemList):
+def addNewOrder(user_id, pwd, itemList):
     '''
     :param user_id: str
     :param pwd: str
@@ -339,19 +380,29 @@ def addNewOrder(user_id, pwd, totalPrice, itemList):
     '''
     localSession = DBSession()
     try:
+        totalPrice = 0
         localSession.query(User).filter(User.user_id == int(user_id),
                                         User.pwd == pwd).one()  # if user not exist, it will throw a except
+        for item in itemList:
+            i = localSession.query(Item).filter(Item.item_id==int(item['itemId'])).one()
+            totalPrice = totalPrice + i.item_price# sum up the price
+            if int(i.item_num)<int(item['num']): # check the remain
+                return False
+
         order = Order(user_id=user_id, order_price=totalPrice)
         localSession.add(order)
         localSession.commit()
         id = order.order_id
+        print "order_status"
+        print order.order_status
         for item in itemList:
-            order_item = Order_item(order_id=id, item_id=item['id'], item_num=item['num'])
+            order_item = Order_item(order_id=id, item_id=int(item['itemId']), item_num=int(item['num']))
             localSession.add(order_item)
             localSession.commit()
         localSession.close()
-        return True
+        return id
     except:
+        traceback.print_exc()
         traceback.print_exc(file=app.config['error_log_file'])
         localSession.close()
         return False
@@ -377,7 +428,7 @@ def getOrderDetail(user_id, pwd, order_id):
             order_item = {}
             order_item['item_id'] = item.item_id
             order_item['item_num'] = item.item_num
-            order_item['item_name'] = localSession.query(Item.item_name).filter(Item.item_id == order_item['item_id'])
+            order_item['item_name'] = localSession.query(Item.item_name).filter(Item.item_id == order_item['item_id']).one()
             list.append(order_item)
         localSession.close()
         return list
@@ -399,8 +450,7 @@ def payOrder(user_id, pwd, order_id):
         ''':type :list[Card]'''
         for card in cardList:
             if transfer(source_card=card.card_id, destination_card=MY_CARD_ID, money=order.order_price) == True:
-                localSession.close()
-                return True
+                break
 
         itemList = localSession.query(Order_item).filter(Order_item.order_id == order_id)
         for item in itemList:
@@ -410,15 +460,17 @@ def payOrder(user_id, pwd, order_id):
             localSession.commit()
 
         order.order_status = 1
-
+        localSession.commit()
         localSession.close()
-        return False
+        return True
     except:
+        traceback.print_exc()
         traceback.print_exc(file=app.config['error_log_file'])
         localSession.close()
         return False
 
 
+# 增加货物
 def addNewItem(id, name, num, price):
     localSession = DBSession()
     try:
@@ -428,20 +480,74 @@ def addNewItem(id, name, num, price):
         localSession.close()
         return True
     except:
+        traceback.print_exc()
         traceback.print_exc(file=app.config['error_log_file'])
         localSession.close()
         return False
 
 
+# 增加库存
 def addItemNum(id, num):
     localSession = DBSession()
     try:
         item = localSession.query(Item).filter(Item.item_id == int(id)).one()
         ''':type :Item'''
-        # item.item_num = int(item.item_num) + int(num)
+        item.item_num = int(item.item_num) + int(num)
         localSession.commit()
         localSession.close()
         return True
+    except:
+        traceback.print_exc(file=app.config['error_log_file'])
+        localSession.close()
+        return False
+
+def changeItemPrice(id,price):
+    localSession = DBSession()
+    try:
+        if int(price)<0:
+            return False
+        item = localSession.query(Item).filter(Item.item_id==int(id)).one()
+        ''':type :Item'''
+        item.changePrice(new_price=float(price))
+        localSession.commit()
+        localSession.close()
+        return True
+    except:
+        traceback.print_exc()
+        traceback.print_exc(file=app.config['error_log_file'])
+        localSession.close()
+        return False
+
+# 清理库存
+def clearItemNum(id):
+    localSession = DBSession()
+    try:
+        item = localSession.query(Item).filter(Item.item_id==int(id)).one()
+        item.item_num = 0
+        localSession.commit()
+        localSession.close()
+        return True
+    except:
+        traceback.print_exc()
+        traceback.print_exc(file=app.config['error_log_file'])
+        localSession.close()
+        return False
+# 获取商品列表
+def getItemList(page=0):
+    localSession = DBSession()
+    try:
+        itemList = localSession.query(Item).offset(int(page) * 20).limit(21)
+        ''':type :list[Item]'''
+        list = []
+        for item in itemList:
+            tmp = {}
+            tmp['item_id'] = item.item_id
+            tmp['item_num'] = item.item_num
+            tmp['item_name'] = item.item_name
+            tmp['item_price'] = str(round(item.item_price, 2))
+            list.append(tmp)
+        localSession.close()
+        return list
     except:
         traceback.print_exc(file=app.config['error_log_file'])
         localSession.close()
@@ -458,6 +564,7 @@ def validCard(card_id, user_phone):
         localSession.query(Account).filter(Account.card_id == card_id, Account.user_phone == user_phone).one()
         return True
     except:
+        traceback.print_exc()
         traceback.print_exc(file=app.config['error_log_file'])
         return False
 
@@ -493,17 +600,17 @@ def transfer(source_card, destination_card, money):
 def hello_world():
     return 'Hello World!'
 
-@app.route('/login',methods=['GET','POST'])
-def check_login():
 
+@app.route('/login', methods=['GET', 'POST'])
+def check_login():
     try:
-        print 1
+        # print 1
         if request.method == 'GET':
-            print 2
+            # print 2
             user_name = request.args.get('name').encode('utf8')
             user_pwd = request.args.get('password').encode('utf8')
         else:
-            print 3
+            # print 3
             user_name = request.form.get('name').encode('utf8')
             user_pwd = request.form.get('password').encode('utf8')
 
@@ -535,15 +642,20 @@ def check_login():
         res['id'] = -1
         return jsonify(res)
 
-@app.route('/order-list')
+
+@app.route('/order-list', methods=['GET', 'POST'])
 def get_order_list():
     '''
     :return:dict['status':boolean,
                  'data':list[dict[]]
     '''
     try:
-        user_id = request.args.get('id').encode('utf8')
-        user_pwd = request.args.get('password').encode('utf8')
+        if request.method == 'GET':
+            user_id = request.args.get('id').encode('utf8')
+            user_pwd = request.args.get('password').encode('utf8')
+        else:
+            user_id = request.form.get('id').encode('utf8')
+            user_pwd = request.form.get('password').encode('utf8')
 
         orderList = getOrderList(user_id=user_id, pwd=user_pwd)
         res = {}
@@ -553,23 +665,30 @@ def get_order_list():
         return jsonify(res)
 
     except:
+        traceback.print_exc()
         traceback.print_exc(file=app.config['error_log_file'])
-        res={}
-        res['status']=False
-        res['data']=None
+        res = {}
+        res['status'] = False
+        res['data'] = None
         return jsonify(res)
 
-@app.route('/order-detail')
+
+@app.route('/order-detail',methods=['GET','POST'])
 def get_order_detail():
     '''
     :return:dict['status':boolean,
                  'data':list[dict[]]
     '''
     try:
-        user_id = request.args.get('id').encode('utf8')
-        user_pwd = request.args.get('password').encode('utf8')
-        order_id = request.args.get('order_id').encode('utf8')
-        detail = getOrderDetail(user_id=user_id, pwd=user_pwd,order_id=order_id)
+        if request.method == 'GET':
+            user_id = request.args.get('id').encode('utf8')
+            user_pwd = request.args.get('password').encode('utf8')
+            order_id = request.args.get('order_id').encode('utf8')
+        else:
+            user_id = request.form.get('id').encode('utf8')
+            user_pwd = request.form.get('password').encode('utf8')
+            order_id = request.form.get('order_id').encode('utf8')
+        detail = getOrderDetail(user_id=user_id, pwd=user_pwd, order_id=order_id)
         res = {}
         res['status'] = True
         res['data'] = detail
@@ -577,23 +696,60 @@ def get_order_detail():
         return jsonify(res)
 
     except:
+        traceback.print_exc()
         traceback.print_exc(file=app.config['error_log_file'])
-        res={}
-        res['status']=False
-        res['data']=None
+        res = {}
+        res['status'] = False
+        res['data'] = None
         return jsonify(res)
 
-@app.route('/add-card')
+@app.route('/card-list', methods=['GET','POST'])
+def card_list():
+    '''
+        :return:dict['status':boolean,
+                     'data':list[dict[]]
+        '''
+    try:
+        if request.method == 'GET':
+            user_id = request.args.get('id').encode('utf8')
+            user_pwd = request.args.get('password').encode('utf8')
+            # order_id = request.args.get('order_id').encode('utf8')
+        else:
+            user_id = request.form.get('id').encode('utf8')
+            user_pwd = request.form.get('password').encode('utf8')
+            # order_id = request.form.get('order_id').encode('utf8')
+        cardList = getCardList(user_id=user_id, pwd=user_pwd)
+        res = {}
+        res['status'] = True
+        res['data'] = cardList
+        print cardList
+        return jsonify(res)
+
+    except:
+        traceback.print_exc()
+        traceback.print_exc(file=app.config['error_log_file'])
+        res = {}
+        res['status'] = False
+        res['data'] = None
+        return jsonify(res)
+
+@app.route('/add-card', methods=['GET','POST'])
 def add_card():
     '''
     :return:dict['status':boolean]
     '''
     try:
-        user_id = request.args.get('id').encode('utf8')
-        user_pwd = request.args.get('password').encode('utf8')
-        card_id = request.args.get('card_id').encode('utf8')
-        user_phone = request.args.get('phone_number').encode('utf8')
-        val = addCard(user_id=user_id, pwd=user_pwd,card_id=card_id,user_phone=user_phone)
+        if request.method == 'GET':
+            user_id = request.args.get('id').encode('utf8')
+            user_pwd = request.args.get('password').encode('utf8')
+            card_id = request.args.get('card_id').encode('utf8')
+            user_phone = request.args.get('phone_number').encode('utf8')
+        else:
+            user_id = request.form.get('id').encode('utf8')
+            user_pwd = request.form.get('password').encode('utf8')
+            card_id = request.form.get('card_id').encode('utf8')
+            user_phone = request.form.get('phone_number').encode('utf8')
+        val = addCard(user_id=user_id, pwd=user_pwd, card_id=card_id, user_phone=user_phone)
         res = {}
         res['status'] = val
         res['data'] = None
@@ -601,11 +757,13 @@ def add_card():
         return jsonify(res)
 
     except:
+        traceback.print_exc()
         traceback.print_exc(file=app.config['error_log_file'])
-        res={}
-        res['status']=False
-        res['data']=None
+        res = {}
+        res['status'] = False
+        res['data'] = None
         return jsonify(res)
+
 
 @app.route('/pay-order')
 def pay_order():
@@ -617,7 +775,7 @@ def pay_order():
         user_id = request.args.get('id').encode('utf8')
         user_pwd = request.args.get('password').encode('utf8')
         order_id = request.args.get('order_id').encode('utf8')
-        val = payOrder(user_id=user_id, pwd=user_pwd,order_id=order_id)
+        val = payOrder(user_id=user_id, pwd=user_pwd, order_id=order_id)
         res = {}
         res['status'] = val
         res['data'] = None
@@ -626,12 +784,13 @@ def pay_order():
 
     except:
         traceback.print_exc(file=app.config['error_log_file'])
-        res={}
-        res['status']=False
-        res['data']=None
+        res = {}
+        res['status'] = False
+        res['data'] = None
         return jsonify(res)
 
-@app.route('/add-order',methods=['POST'])
+
+@app.route('/add-order', methods=['POST'])
 def add_order():
     '''
     :return:dict['status':boolean,
@@ -640,32 +799,66 @@ def add_order():
     try:
         user_id = request.form.get('id').encode('utf8')
         user_pwd = request.form.get('password').encode('utf8')
-        item_list = request.form.getlist('item_list').encode('utf8')
-        total_price = request.form.get('totalPrice').encode('utf8')
 
-        val = addNewOrder(user_id=user_id, pwd=user_pwd,totalPrice=float(total_price),itemList=item_list)
+        item_list_str = request.form.get('itemList')
+        item_list = request.form.getlist('itemList')
+
+        #total_price = request.form.get('totalPrice').encode('utf8')
+        # itemList = item
+        # [{"itemId": 2001, "num": 2}, {"itemId": 101, "num": 1}]
+        #print type(item_list_str)
+        #print type
+        itemList = eval(item_list_str)
+        val = addNewOrder(user_id=user_id, pwd=user_pwd, itemList=itemList)
+        if val == False:
+            return jsonify({'status':False,'data':None})
+
+        payOrder(user_id=user_id, pwd=user_pwd, order_id=val)
+
         res = {}
-        res['status'] = val
+        res['status'] = True
         res['data'] = None
         print res
         return jsonify(res)
 
     except:
+        traceback.print_exc()
         traceback.print_exc(file=app.config['error_log_file'])
-        res={}
-        res['status']=False
-        res['data']=None
+        res = {}
+        res['status'] = False
+        res['data'] = None
         return jsonify(res)
 
-@app.route('/manage-login',methods=['GET','POST'])
+@app.route('/remove-card', methods=['GET','POST'])
+def remove_card():
+    try:
+        if request.method == 'GET':
+            user_id = request.args.get('id').encode('utf8')
+            user_pwd = request.args.get('password').encode('utf8')
+            card_id = request.args.get('card_id').encode('utf8')
+        else:
+            user_id = request.form.get('id').encode('utf8')
+            user_pwd = request.form.get('password').encode('utf8')
+            card_id = request.form.get('card_id').encode('utf8')
+        val = removeUserCard(user_id=int(user_id), pwd=user_pwd,card_id=card_id)
+        if val == True:
+            return jsonify({'status':True, 'data':None})
+        else:
+            return jsonify({'status':False, 'data':None})
+    except:
+        traceback.print_exc()
+        traceback.print_exc(file=app.config['error_log_file'])
+        return jsonify({'status': False, 'data': None})
+
+@app.route('/manage-login', methods=['GET', 'POST'])
 def manage_login():
     if request.method == 'GET':
         return render_template('login.html')
     else:
         try:
             user = request.form.get('id').encode('utf8')
-            pwd  = request.form.get('pwd').encode('utf8')
-            val  = checkManagerLogin(id=user, pwd=pwd)
+            pwd = request.form.get('pwd').encode('utf8')
+            val = checkManagerLogin(id=user, pwd=pwd)
             res = {}
             if val == True:
                 res['status'] = 0
@@ -675,7 +868,86 @@ def manage_login():
                 res['status'] = -1
                 return jsonify(res)
         except:
-            return jsonify({'status':-1})
+            return jsonify({'status': -1})
+
+
+@app.route('/back', methods=['GET', 'POST'])
+def back():
+    if request.method == 'GET':
+        if 'MANAGE' not in session:
+            return redirect('/manage-login')
+        active = {}
+        if request.args.get('page'):
+            active['currentPage'] = int(request.args.get('page').encode('utf8'))
+
+        else:
+            active['currentPage'] = 0
+        itemList = getItemList(page=active['currentPage'])
+        if active['currentPage'] == 0:
+            active['pre'] = False
+        else:
+            active['pre'] = True
+
+        if len(itemList)==21:
+            active['next'] = True
+            itemList.pop()
+        else:
+            active['next'] = False
+
+
+        return render_template('item_list.html', itemList=itemList,active=active)
+    else:
+        try:
+            if 'MANAGE' not in session:
+                return jsonify({'status':False})
+            method = request.form.get('method').encode('utf8')
+
+            if method == 'add-new-item':
+                id = request.form.get('id').encode('utf8')
+                name = request.form.get('name').encode('utf8')
+                num = int(request.form.get('num').encode('utf8'))
+                price = float(request.form.get('price').encode('utf8'))
+
+
+                val = addNewItem(id=id, name=name, num=num, price=price)
+                if val == True:
+                    return jsonify({'status': 0})
+                else:
+                    return jsonify({'status': -1})
+
+            elif method == 'add-item-num':
+                id = request.form.get('id').encode('utf8')
+                num = request.form.get('num').encode('utf8')
+                print num
+                val = addItemNum(id=id, num=num)
+                if val == True:
+                    return jsonify({'status': 0})
+                else:
+                    return jsonify({'status': -1})
+
+            elif method == 'change-item-price':
+                id = request.form.get('id').encode('utf8')
+                price = request.form.get('price').encode('utf8')
+                val = changeItemPrice(id=int(id), price=float(price))
+                if val == True:
+                    return jsonify({'status': 0})
+                else:
+                    return jsonify({'status': -1})
+            elif method == 'clear-item-num':
+                id = request.form.get('id').encode('utf8')
+                val = clearItemNum(id)
+                if val == True:
+                    return jsonify({'status':0})
+                else:
+                    return jsonify({'status':-1})
+
+        except:
+            traceback.print_exc()
+            traceback.print_exc(file=app.config['error_log_file'])
+            return jsonify({'status': -1})
+
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
 
