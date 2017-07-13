@@ -32,7 +32,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
-        app:srcCompat="@drawable/dog" />
+        app:srcCompat="@drawable/icon" />
 
     <TextView
         android:id="@+id/LogoText"
@@ -41,7 +41,11 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
-        android:text="TextView" />
+        android:paddingTop="150dp"
+        android:text="支付结果"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp" />
 
 
 </LinearLayout>

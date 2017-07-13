@@ -6,14 +6,17 @@
     android:layout_height="match_parent"
     tools:context="com.wego.wego.receiveItem"
     tools:layout_editor_absoluteY="81dp"
-    tools:layout_editor_absoluteX="0dp">
+    tools:layout_editor_absoluteX="0dp"
+    android:theme="@style/MyReceiveItemListTheme">
 
     <ListView
         android:id="@+id/itemListView"
         android:layout_width="385dp"
         android:layout_height="439dp"
         app:layout_constraintRight_toRightOf="parent"
-        tools:layout_editor_absoluteY="8dp" />
+        tools:layout_editor_absoluteY="8dp"
+        android:divider="#F1F1F1"
+        android:dividerHeight="10dp"/>
 
     <TextView
         android:id="@+id/textView3"

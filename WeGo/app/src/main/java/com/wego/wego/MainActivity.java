@@ -87,7 +87,7 @@ public class MainActivity extends BaseNfcActivity
         //TextView AccountName = (TextView) LayoutInflater.from(AccountActivity.this).inflate(R.layout.nav_header_account, null).findViewById(R.id.Account_name);
 
         //这行代码不许改！
-        TextView AccountName = (TextView)findViewById(R.id.textView4);
+        TextView AccountName = (TextView)findViewById(R.id.Account_name);
         Bundle bundle = intent.getExtras();
         email = bundle.getString("email");
         password = bundle.getString("password");
@@ -108,7 +108,6 @@ public class MainActivity extends BaseNfcActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         //调用run函数
         activityHandler.post(MainActivity.this);
@@ -131,7 +130,6 @@ public class MainActivity extends BaseNfcActivity
         logoImage.setLayoutParams(btParams);
 
         logoInfo = (TextView)findViewById(R.id.LogoText);
-        logoInfo.setText("这里是内容");
         LinearLayout.LayoutParams InfoParams = new LinearLayout.LayoutParams(500,500);
         InfoParams.width = 500;
         InfoParams.height = 500;

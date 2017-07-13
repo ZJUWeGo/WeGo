@@ -11,4 +11,6 @@
     <color name="logincolorButtonNormal">#FFFFFF</color>
     <color name="logincolorControlHighlight">#d50000</color>
     <color name="logintextColorPrimary">#424242</color>
+
+    <color name="myactionBarTextColor">#FFFFFF</color>
 </resources>

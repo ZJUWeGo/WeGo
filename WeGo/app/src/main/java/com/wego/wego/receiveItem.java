@@ -41,11 +41,6 @@ public class receiveItem extends AppCompatActivity {
         System.out.println("Bundle！！！！！"+bundle);
         ItemList itemList = (ItemList)getApplication();
 
-        try {
-            bundle.putString("itemList",itemList.getJsonArray().toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
 
         mListViewArray = (ListView)findViewById(R.id.itemListView);
