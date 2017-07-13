@@ -8,9 +8,21 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="MyAppTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/mycolorPrimary</item>
+        <item name="colorPrimaryDark">@color/mycolorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="MyLoginButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/logincolorControlHighlight</item>
+        <item name="colorButtonNormal">@color/logincolorButtonNormal</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

@@ -4,4 +4,11 @@
     <color name="colorPrimaryDark">#303f9f</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorWhite">#FFFFFF</color>
+
+    <color name="mycolorPrimary">#ef5350</color>
+    <color name="mycolorPrimaryDark">#d32f2f</color>
+
+    <color name="logincolorButtonNormal">#FFFFFF</color>
+    <color name="logincolorControlHighlight">#d50000</color>
+    <color name="logintextColorPrimary">#424242</color>
 </resources>
