@@ -8,6 +8,7 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
+
     <include
         layout="@layout/app_bar_account"
         android:layout_width="match_parent"
@@ -23,14 +24,17 @@
         app:menu="@menu/activity_account_drawer"
         >
 
+
         <TextView
             android:id="@+id/textView4"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="TextView"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:text="TextView" />
     </android.support.design.widget.NavigationView>
 
+
+
 </android.support.v4.widget.DrawerLayout>
+
+
+

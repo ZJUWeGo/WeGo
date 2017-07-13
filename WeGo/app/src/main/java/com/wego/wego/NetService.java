@@ -1,5 +1,8 @@
 package com.wego.wego;
 
+import android.os.Bundle;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -18,6 +21,27 @@ import java.util.Map;
  * Created by Wu on 2017/7/8.
  */
 public class NetService {
+
+    /**
+     * 发送订单列表
+     * @param jsonArray
+     * @return 是否成功
+     */
+    public static JSONObject sendItemList(int id, String password , String jsonArray) throws NoSuchAlgorithmException {
+        String path = "http://101.200.42.170:5000/add-order";
+        Map<String, String> customer = new HashMap<String, String>();
+        customer.put("id", String.valueOf(id));
+        customer.put("password", NetService.encode(password));
+        customer.put("itemList", jsonArray);
+        System.out.println(customer);
+        try {
+            JSONObject jsonObject = new JSONObject(sendRequestByPost(path, customer, "UTF-8"));
+            return jsonObject;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     /**
      * 登录验证
@@ -41,6 +65,117 @@ public class NetService {
         }
         return -1;
     }
+
+    /**
+     * 请求历史订单
+     * @param id
+     * @param password
+     * @return 返回JSON对象
+     */
+    public static JSONObject getHistoryList(int id, String password) throws NoSuchAlgorithmException {
+        String path = "http://101.200.42.170:5000/order-list";
+        Map<String, String> customer = new HashMap<String, String>();
+        customer.put("id", String.valueOf(id));
+        customer.put("password", NetService.encode(password));
+        try {
+            JSONObject jsonObject = new JSONObject(sendRequestByPost(path, customer, "UTF-8"));
+
+            return jsonObject;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 请求订单详情
+     * @param id
+     * @param password
+     * @return 返回JSON对象
+     */
+    public static JSONObject getListItems(int id, String password, int order_id) throws NoSuchAlgorithmException {
+        String path = "http://101.200.42.170:5000/order-detail";
+        Map<String, String> customer = new HashMap<String, String>();
+        customer.put("id", String.valueOf(id));
+        customer.put("password", NetService.encode(password));
+        customer.put("order_id", String.valueOf(order_id));
+        try {
+            JSONObject jsonObject = new JSONObject(sendRequestByPost(path, customer, "UTF-8"));
+
+            return jsonObject;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 请求银行卡号
+     * @param id
+     * @param password
+     * @return 返回JSON对象
+     */
+    public static JSONObject getCards(int id, String password) throws NoSuchAlgorithmException {
+        String path = "http://101.200.42.170:5000/card-list";
+        Map<String, String> customer = new HashMap<String, String>();
+        customer.put("id", String.valueOf(id));
+        customer.put("password", NetService.encode(password));
+        try {
+            JSONObject jsonObject = new JSONObject(sendRequestByPost(path, customer, "UTF-8"));
+
+            return jsonObject;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 添加银行卡号
+     * @param id
+     * @param password
+     * @return 返回JSON对象
+     */
+    public static JSONObject addCards(int id, String password, String card_id, String phone_number) throws NoSuchAlgorithmException {
+        String path = "http://101.200.42.170:5000/add-card";
+        Map<String, String> customer = new HashMap<String, String>();
+        customer.put("id", String.valueOf(id));
+        customer.put("password", NetService.encode(password));
+        customer.put("card_id", String.valueOf(card_id));
+        customer.put("phone_number", String.valueOf(phone_number));
+        try {
+            JSONObject jsonObject = new JSONObject(sendRequestByPost(path, customer, "UTF-8"));
+
+            return jsonObject;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    /**
+     * 删除银行卡号
+     * @param id
+     * @param password
+     * @return 返回JSON对象
+     */
+    public static JSONObject deleteCards(int id, String password, String card_id) throws NoSuchAlgorithmException {
+        String path = "http://101.200.42.170:5000/remove-card";
+        Map<String, String> customer = new HashMap<String, String>();
+        customer.put("id", String.valueOf(id));
+        customer.put("password", NetService.encode(password));
+        customer.put("card_id", String.valueOf(card_id));
+        try {
+            JSONObject jsonObject = new JSONObject(sendRequestByPost(path, customer, "UTF-8"));
+
+            return jsonObject;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /**
      * 获取个人信息
      * @param id
@@ -144,7 +279,6 @@ public class NetService {
         while ((line = reader.readLine()) != null) {
             builder.append(line);// 一行行的读取内容并追加到builder中去
         }
-        System.out.println(builder);
         return new String(builder);
     }
 
@@ -183,4 +317,10 @@ public class NetService {
 //        return new String(sha.digest());
         return string;
     }
+
+
+
+
 }
+
+

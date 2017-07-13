@@ -6,7 +6,6 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
-import android.nfc.tech.NfcA;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,7 +13,7 @@ import android.widget.TextView;
 
 import java.util.Arrays;
 
-public class ReadItem extends BaseNfcActivity {
+public class DeleteItem extends BaseNfcActivity {
 
     private TextView mNfcText;
     private  String mTagText;
@@ -22,8 +21,8 @@ public class ReadItem extends BaseNfcActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_read_item);
-        mNfcText =(TextView)findViewById(R.id.itemText);
+        setContentView(R.layout.activity_delete_item);
+        mNfcText =(TextView)findViewById(R.id.deleteItemText);
     }
 
     @Override
@@ -38,7 +37,7 @@ public class ReadItem extends BaseNfcActivity {
 
         ItemList myItemList = (ItemList)getApplication();
         Item myItem = new Item(mTagText);
-        myItemList.addItem(myItem);
+        myItemList.deleteItem(myItem);
     }
 
     private void readNfcTag(Intent intent){
@@ -65,12 +64,6 @@ public class ReadItem extends BaseNfcActivity {
         }
 
     }
-
-    /**
-     * 解析NDEF文本数据，从第三个字节开始，后面的文本数据
-     * @param ndefRecord
-     * @return
-     */
     public static String parseTextRecord(NdefRecord ndefRecord) {
         /**
          * 判断数据是否为NDEF格式

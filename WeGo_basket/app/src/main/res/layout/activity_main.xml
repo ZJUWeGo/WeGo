@@ -8,8 +8,6 @@
 
 
     <Button
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
         android:id="@+id/payBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,24 +17,45 @@
         android:textSize="@dimen/payButtonTextSize"
         android:background="@drawable/bg_special_disease_circle"
         tools:layout_editor_absoluteY="166dp"
-        tools:layout_editor_absoluteX="103dp" />
+        tools:layout_editor_absoluteX="103dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
         android:layout_above="@+id/payBtn"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="29dp" />
+        android:layout_marginBottom="22dp" />
 
-    <Button
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/readItemBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/payBtn"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="46dp"
-        android:text="Button" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="13dp"
+        android:layout_marginEnd="14dp"
+        android:clickable="true"
+        android:theme="@style/AddItemBtn"
+        app:elevation="4dp"
+        app:fabSize="normal"
+        app:rippleColor="#880E4F"
+        app:srcCompat="@drawable/ic_readitem" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/deleteItemBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/readItemBtn"
+        android:layout_alignStart="@+id/readItemBtn"
+        android:layout_marginBottom="9dp"
+        android:clickable="true"
+        android:theme="@style/DeleteItemBtn"
+        app:elevation="3dp"
+        app:fabSize="normal"
+        app:rippleColor="#616161"
+        app:srcCompat="@drawable/ic_delete_item" />
 
 </RelativeLayout>
