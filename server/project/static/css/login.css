@@ -64,3 +64,38 @@ body {
   width: 100%;
   height: 100%;
 }
+
+.input-group-addon:hover{
+    background-color: lightgray;
+}
+th {
+    font-size:24px;
+}
+td {
+    font-size: 24px;
+}
+td .input-group{
+    height: 26px;
+}
+
+td .input-group{
+    border-left: 1px solid #ccc !important;
+    border-right: 1px solid #ccc !important;
+    border-radius: 4px;
+}
+.myButton {
+    height:34px;
+    background-color: rgba(240,240,240,0.3);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    padding:inherit;
+}
+.myButton:hover{
+    border-color: dimgray;
+    background-color: rgba(135,135,135,0.4);
+}
+.myButton:disabled{
+    background-color: rgba(222,222,222,0.1);
+    cursor:inherit;
+    color:lightgray;
+}
