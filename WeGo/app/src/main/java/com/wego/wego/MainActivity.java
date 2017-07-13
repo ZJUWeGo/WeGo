@@ -212,7 +212,7 @@ public class MainActivity extends BaseNfcActivity
                 public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
                                         long arg3) {
                     // TODO Auto-generated method stub
-                    showItem(arg2 + 1 );
+                    showItem(arg2);
                 }
 
             });
@@ -300,6 +300,40 @@ public class MainActivity extends BaseNfcActivity
                 String tempString = temp.get("order_time").toString() + "   "+"￥" +  temp.get("order_price").toString() + spaceString.toString() + "   "+ temp.get("order_status").toString();
 
                 data.add(tempString);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+//        System.out.println("This is in main thread");
+//        System.out.println(jsonObject);
+
+        return data;
+    }
+
+    private List<String> getListID() throws InterruptedException, ExecutionException, TimeoutException {
+
+
+
+        List<String> data = new ArrayList<String>();
+
+        //获取json数组解析出title
+        Bundle bundle = new Bundle();
+        bundle.putInt("id",this.id);
+        bundle.putString("password",this.password);
+
+        ExecutorService executorService= Executors.newCachedThreadPool();
+        Callable<JSONObject> callable=new NetThread(1,bundle);
+        Future future=executorService.submit(callable);
+        JSONObject jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);//3s超时
+
+        try {
+            JSONArray list = jsonObject.getJSONArray("data");
+            System.out.println(list);
+            for ( int i = 0; i < list.length(); i ++){
+                JSONObject temp = list.getJSONObject(i);
+                data.add(temp.getString("order_id"));
             }
 
         } catch (JSONException e) {
@@ -580,13 +614,26 @@ public class MainActivity extends BaseNfcActivity
     //获取订单详情
     public void showItem(int arg2)  {
 
+
+        List<String> historyIDList = null;
+        try {
+            historyIDList = getListID();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+
+
         List<String> data = new ArrayList<String>();
         //获取json数组解析出订单内容
 
         Bundle bundle = new Bundle();
         bundle.putInt("id",this.id);
         bundle.putString("password",this.password);
-        bundle.putInt("order_id",arg2);
+        bundle.putInt("order_id",Integer.parseInt(historyIDList.get(arg2)));
         System.out.println(arg2);
 
         ExecutorService executorService= Executors.newCachedThreadPool();
