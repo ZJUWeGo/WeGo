@@ -239,7 +239,7 @@ public class MainActivity extends BaseNfcActivity
         return true;
     }
 
-
+    //更新页面信息
     private void AddorDelete(int argu){
 
 
@@ -457,7 +457,7 @@ public class MainActivity extends BaseNfcActivity
             msp.setSpan(new ForegroundColorSpan(Color.MAGENTA), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);  //设置前景色为洋红色
 
             tv.setText(msp);
-            final String deletedCard = thisString;
+            final String deletedCard = cards[arg2].substring(5);
             new AlertDialog.Builder(this)
                     .setTitle("银行卡删除")
                     .setView(tv)
@@ -471,7 +471,7 @@ public class MainActivity extends BaseNfcActivity
                             Bundle bundle = new Bundle();
                             bundle.putInt("id",Current_id);
                             bundle.putString("password",Current_password);
-                            bundle.putString("card_id",tv.getText().toString());
+                            bundle.putString("card_id",deletedCard);
 
 
                             ExecutorService executorService= Executors.newCachedThreadPool();
