@@ -32,6 +32,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -74,7 +75,9 @@ public class MainActivity extends BaseNfcActivity
 
     DrawerLayout drawer;
 
-    Button myButton;
+
+    ImageView logoImage;
+    TextView logoInfo;
 
     //display the username
     public void run() {
@@ -118,22 +121,25 @@ public class MainActivity extends BaseNfcActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        myButton = (Button) findViewById(R.id.myButton);
-        myButton.setText("支付");
-        myButton.setTextSize(24);
+
+        logoImage = (ImageView)findViewById(R.id.LogoView);
         LinearLayout.LayoutParams btParams = new LinearLayout.LayoutParams(500,500);
         btParams.width = 500;
         btParams.height = 500;
         btParams.topMargin = -1200;
         btParams.gravity = Gravity.CENTER_HORIZONTAL;
-        myButton.setLayoutParams(btParams);
-        myButton.setOnClickListener(new Button.OnClickListener(){//创建监听
-            public void onClick(View v) {
+        logoImage.setLayoutParams(btParams);
 
-                System.out.println("ahhhhhhh");
-            }
+        logoInfo = (TextView)findViewById(R.id.LogoText);
+        logoInfo.setText("这里是内容");
+        LinearLayout.LayoutParams InfoParams = new LinearLayout.LayoutParams(500,500);
+        InfoParams.width = 500;
+        InfoParams.height = 500;
+        InfoParams.topMargin = 50;
+        InfoParams.gravity = Gravity.CENTER_HORIZONTAL;
+        logoInfo.setLayoutParams(InfoParams);
 
-        });
+
 
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -241,26 +247,40 @@ public class MainActivity extends BaseNfcActivity
 
         if (argu == 1) {
 
-            myButton = (Button) findViewById(R.id.myButton);
-
+            logoImage = (ImageView)findViewById(R.id.LogoView);
             LinearLayout.LayoutParams btParams = new LinearLayout.LayoutParams(500,500);
             btParams.width = 500;
             btParams.height = 500;
             btParams.topMargin = -1200;
             btParams.gravity = Gravity.CENTER_HORIZONTAL;
-            myButton.setLayoutParams(btParams);
+            logoImage.setLayoutParams(btParams);
+
+            logoInfo = (TextView)findViewById(R.id.LogoText);
+            LinearLayout.LayoutParams InfoParams = new LinearLayout.LayoutParams(500,500);
+            InfoParams.width = 500;
+            InfoParams.height = 500;
+            InfoParams.topMargin = 50;
+            InfoParams.gravity = Gravity.CENTER_HORIZONTAL;
+            logoInfo.setLayoutParams(InfoParams);
 
         }
         else {
 
-            myButton = (Button) findViewById(R.id.myButton);
-
+            logoImage = (ImageView)findViewById(R.id.LogoView);
             LinearLayout.LayoutParams btParams = new LinearLayout.LayoutParams(500,500);
             btParams.width = 500;
             btParams.height = 500;
-            btParams.topMargin = 400;
+            btParams.topMargin = 500;
             btParams.gravity = Gravity.CENTER_HORIZONTAL;
-            myButton.setLayoutParams(btParams);
+            logoImage.setLayoutParams(btParams);
+
+            logoInfo = (TextView)findViewById(R.id.LogoText);
+            LinearLayout.LayoutParams InfoParams = new LinearLayout.LayoutParams(500,500);
+            InfoParams.width = 500;
+            InfoParams.height = 500;
+            InfoParams.topMargin = 1000;
+            InfoParams.gravity = Gravity.CENTER_HORIZONTAL;
+            logoInfo.setLayoutParams(InfoParams);
         }
         drawer.invalidate();
 

@@ -25,19 +25,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <Button
-        android:id="@+id/myButton"
+    <ImageView
+        android:id="@+id/LogoView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
-        android:background="@drawable/bg_special_disease_circle"
-        android:text="@string/payButtonText"
-        android:textColor="@color/colorWhite"
-        android:textSize="@dimen/payButtonTextSize"
-        tools:layout_editor_absoluteX="103dp"
-        tools:layout_editor_absoluteY="166dp" />
+        app:srcCompat="@drawable/dog" />
+
+    <TextView
+        android:id="@+id/LogoText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:text="TextView" />
 
 
 </LinearLayout>
