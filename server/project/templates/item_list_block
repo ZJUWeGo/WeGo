@@ -96,7 +96,7 @@
                         <div class="input-group col-sm-12">
 
                             <input id="page" type="text" class="form-control"
-                                   placeholder="页码">
+                                   placeholder="当前第{{ active['currentPage'] }}页">
                              <span class="input-group-addon jump">
                                 <i class="glyphicon glyphicon-plane" data-toggle="tooltip" title="跳转"></i></span>
 

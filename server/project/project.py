@@ -7,6 +7,7 @@ import traceback
 import urllib2, json, urllib
 import re
 from os import urandom
+import os
 import platform
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, ForeignKey, String, create_engine, Integer, DATETIME, TEXT, BIGINT, or_, desc
@@ -18,15 +19,21 @@ MANAGER = ['123456']
 PASSWORD = ['123456']
 MY_CARD_ID = '1234567890'
 
+SERVER_MYSQL_ACCOUNT = 'root'
+SERVER_MYSQL_PASSWORD = 'mysqlpasswd'
+
 # app配置
 app = Flask(__name__, template_folder='templates')
 
 app.secret_key = urandom(24)
 
+
+
+
 if platform.system() == 'Linux':
     app.debug = False
-    app.config['error_log_file_path'] = '/root/flask/WeGo/server/log/error_log.txt'
-    app.config['op_log_file_path'] = '/root/flask/WeGo/server/log/op_log.txt'
+    app.config['error_log_file_path'] = os.path.dirname(os.path.abspath(__file__))+'/log/error_log.txt'
+    app.config['op_log_file_path'] = os.path.dirname(os.path.abspath(__file__))+'/log/op_log.txt'
     app.config['database_connect'] = "mysql://root:mysqlpasswd@localhost:3306/WeGo?charset=utf8"
     app.config['database_connect_bank'] = "mysql://root:mysqlpasswd@localhost:3306/bank?charset=utf8"
 
@@ -385,7 +392,7 @@ def addNewOrder(user_id, pwd, itemList):
                                         User.pwd == pwd).one()  # if user not exist, it will throw a except
         for item in itemList:
             i = localSession.query(Item).filter(Item.item_id==int(item['itemId'])).one()
-            totalPrice = totalPrice + i.item_price# sum up the price
+            totalPrice = totalPrice + i.item_price * int(item['num'])# sum up the price
             if int(i.item_num)<int(item['num']): # check the remain
                 return False
 
@@ -421,6 +428,7 @@ def getOrderDetail(user_id, pwd, order_id):
         localSession.query(User).filter(User.user_id == int(user_id),
                                         User.pwd == pwd).one()  # if user not exist, it will throw a except
 
+        print order_id
         list = []
         order_itemList = localSession.query(Order_item).filter(Order_item.order_id == order_id)
         ''':type :list[Order_item]'''
@@ -433,6 +441,7 @@ def getOrderDetail(user_id, pwd, order_id):
         localSession.close()
         return list
     except:
+        traceback.print_exc()
         traceback.print_exc(file=app.config['error_log_file'])
         localSession.close()
         return None
@@ -661,7 +670,7 @@ def get_order_list():
         res = {}
         res['status'] = True
         res['data'] = orderList
-        print orderList
+        # print orderList
         return jsonify(res)
 
     except:
@@ -809,6 +818,7 @@ def add_order():
         #print type(item_list_str)
         #print type
         itemList = eval(item_list_str)
+        print itemList
         val = addNewOrder(user_id=user_id, pwd=user_pwd, itemList=itemList)
         if val == False:
             return jsonify({'status':False,'data':None})
@@ -907,7 +917,10 @@ def back():
                 name = request.form.get('name').encode('utf8')
                 num = int(request.form.get('num').encode('utf8'))
                 price = float(request.form.get('price').encode('utf8'))
-
+                if price < 0:
+                    return jsonify({'status': -2})
+                if num < 0:
+                    return jsonify({'status': -3})
 
                 val = addNewItem(id=id, name=name, num=num, price=price)
                 if val == True:

@@ -182,7 +182,8 @@ $(document).on('click', '.addNewItem', function () {
         return;
     }
     if (parseFloat(price)<0.0){
-        layer.msg('请输入有效价格')
+        layer.msg('请输入有效价格');
+        return;
     }
     var data = {
         "method":'add-new-item',
@@ -236,6 +237,16 @@ $(document).on('click', '.addNewItem', function () {
                 // target.text(parseInt(target.innerHTML)+parseInt(num))
                 btn.removeAttr('disabled');
 
+            }
+            else if(data['status'] === -2){
+                btn.removeAttr('disabled');
+
+                layer.msg('价格不能为负');
+            }
+            else if(data['status'] === -3){
+                btn.removeAttr('disabled');
+
+                layer.msg('数量不能为负');
             }
             else {
 
@@ -302,7 +313,7 @@ $(document).on('click', '.delete', function () {
     })
 });
 
-// $(document).on('click', '.jump', function(){
-//    page = $('#page').val();
-//    window.location = '/back?page='+page;
-// });
+$(document).on('click', '.jump', function(){
+   page = $('#page').val();
+   window.location = '/back?page='+page;
+});
