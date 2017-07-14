@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-    </android.support.design.widget.AppBarLayout>
+
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -22,9 +22,9 @@
         app:titleTextColor="@color/myactionBarTextColor"
         app:theme="@style/AppTheme.AppBarOverlay"
         />
+    </android.support.design.widget.AppBarLayout>
 
     <include
-        android:id="@+id/include"
         layout="@layout/content_account" />
 
     <!--<android.support.design.widget.FloatingActionButton-->
