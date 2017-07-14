@@ -1,11 +1,13 @@
 package com.wego.wego;
 
-import android.app.AlertDialog;
+
+
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.DialogInterface;
+
 import android.content.Intent;
-import android.graphics.Color;
+
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -14,32 +16,16 @@ import android.nfc.tech.Ndef;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import android.provider.Settings;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
-import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.View;
+
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
+
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TableLayout;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,25 +35,9 @@ import com.wego.wego.Fragment.HomepageFragment;
 import com.wego.wego.Fragment.OrderFragment;
 import com.wego.wego.Item.ItemList;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+
 
 public class MainActivity extends BaseNfcActivity
         implements NavigationView.OnNavigationItemSelectedListener, Runnable{
@@ -123,9 +93,12 @@ public class MainActivity extends BaseNfcActivity
 
         //首先加载homepage fragment
         fm = getFragmentManager();
+        //FragmentManager.enableDebugLogging(true);
         FragmentTransaction transaction = fm.beginTransaction();
+        System.out.println("new homepageFragment!!!!!!!!");
         homepageFragment = new HomepageFragment();
         transaction.add(R.id.main_layout,homepageFragment);
+        transaction.addToBackStack(null);
         transaction.commit();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -135,10 +108,17 @@ public class MainActivity extends BaseNfcActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        Fragment ft = (Fragment) getFragmentManager().findFragmentById(R.id.main_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+        }
+        else if(ft instanceof HomepageFragment){
+            moveTaskToBack(false);
+        }
+        else {
+            FragmentTransaction transaction = fm.beginTransaction();
+            transaction.replace(R.id.main_layout,homepageFragment);
+            transaction.commit();
         }
     }
 
@@ -164,10 +144,12 @@ public class MainActivity extends BaseNfcActivity
             System.out.println("This is in personInfo, and my name is "+ email);
 
             if(accountFragment == null){
+                System.out.println("new accountFragment!");
                 accountFragment = new AccountFragment();
             }
             transaction.replace(R.id.main_layout,accountFragment);
             transaction.commit();
+
             //System.out.println("replace accountFragment!!!");
 
         //历史订单
@@ -363,14 +345,21 @@ public class MainActivity extends BaseNfcActivity
     }
 
     /*设置app按返回键不退出，而是移至后台*/
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            moveTaskToBack(false);
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//            if (drawer.isDrawerOpen(GravityCompat.START)) {
+//                drawer.closeDrawer(GravityCompat.START);
+//            }
+//            else{
+//                moveTaskToBack(false);
+//                return true;
+//            }
+//
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
 
     public String getEmail(){
         return email;
