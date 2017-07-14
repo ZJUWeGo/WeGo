@@ -47,6 +47,7 @@ public class receiveItem extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+                System.out.println("我点击了返回！！！！！！");
             }
         });
 
@@ -54,7 +55,7 @@ public class receiveItem extends AppCompatActivity {
 
         final Bundle bundle = this.getIntent().getExtras();
         System.out.println("Bundle！！！！！"+bundle);
-        ItemList itemList = (ItemList)getApplication();
+        final ItemList itemList = (ItemList)getApplication();
 
         try {
               bundle.putString("itemList",itemList.getJsonArray().toString());
@@ -79,12 +80,15 @@ public class receiveItem extends AppCompatActivity {
             public void onClick(View view) {
 
                 System.out.println("我要开始支付了！！！！！");
+                itemList.tryPay = true;     //尝试支付了
                 ExecutorService executorService= Executors.newCachedThreadPool();
                 Callable<JSONObject> callable=new NetThread(6,bundle);
                 Future future=executorService.submit(callable);
                 try {
                     JSONObject jsonObject = (JSONObject) future.get(10000, TimeUnit.MILLISECONDS);//3s超时
+                    itemList.setPay(jsonObject.getBoolean("status"));       //成功后更新支付状态
                     System.out.println(jsonObject.getBoolean("status"));
+                    finish();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {

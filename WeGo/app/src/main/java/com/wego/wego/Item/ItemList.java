@@ -16,12 +16,17 @@ public class ItemList extends Application{
 
     public ArrayList<Item> itemList;
 
+    private boolean isPay = false;
+    public boolean tryPay = false;
+
     @Override
     public void onCreate() {
         super.onCreate();
     }
     public void addItemList(String itemList){
         this.itemList = new ArrayList<Item>();
+        this.tryPay = false;
+        this.isPay = false;
         String[] items = itemList.substring(0,itemList.length() - 1).split("&");
         for (String item: items) {
             Item thisItem = new Item(item);
@@ -29,6 +34,15 @@ public class ItemList extends Application{
             this.itemList.add(thisItem);
         }
     }
+
+    public boolean getPay(){
+        return isPay;
+    }
+
+    public void setPay(boolean status){
+        isPay = status;
+    }
+
     public double getTotalPrice(){
         double totalPrice = 0;
         for (Item item: itemList) {

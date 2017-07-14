@@ -19,6 +19,7 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -53,6 +54,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -144,6 +147,51 @@ public class MainActivity extends BaseNfcActivity
         navigationView.setNavigationItemSelectedListener(this);
 
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        ItemList itemList = (ItemList)getApplication();
+        boolean isPay = itemList.getPay();
+        if(itemList.tryPay && isPay){       //支付过，支付成功
+            logoInfo.setText("支付成功:)");
+
+            Timer timer = new Timer();
+            TimerTask timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            logoInfo.setText("欢迎光临");
+                        }
+                    });
+                }
+            };
+            timer.schedule(timerTask,5000);
+        }
+        else if(itemList.tryPay && !isPay){     //支付过，支付失败
+            logoInfo.setText("支付失败:(");
+
+            Timer timer = new Timer();
+            TimerTask timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            logoInfo.setText("欢迎光临");
+                        }
+                    });
+                }
+            };
+            timer.schedule(timerTask,5000);
+        }
+        else{
+            logoInfo.setText("欢迎光临");
+        }
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -891,6 +939,15 @@ public class MainActivity extends BaseNfcActivity
         } catch (Exception e) {
             throw new IllegalArgumentException();
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            moveTaskToBack(false);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 }
