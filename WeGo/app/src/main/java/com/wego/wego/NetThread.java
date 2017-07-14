@@ -14,7 +14,7 @@ public class NetThread implements Callable<JSONObject> {
     private Bundle bundle;
     private JSONObject jsonObject;
 
-    NetThread(int type, Bundle bundle) {
+    public NetThread(int type, Bundle bundle) {
         this.type = type;
         this.bundle = bundle;
     }
