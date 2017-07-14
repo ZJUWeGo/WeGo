@@ -7,8 +7,8 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:openDrawer="start"
-    android:background="@drawable/main_backgroundbitmap">
-
+    >
+    <!--android:background="@drawable/main_backgroundbitmap"-->
 
     <include
         layout="@layout/app_bar_account"

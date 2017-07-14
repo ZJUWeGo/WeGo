@@ -1,6 +1,8 @@
 package com.wego.wego;
 
 import android.app.AlertDialog;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -42,6 +44,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wego.wego.Base.BaseNfcActivity;
+import com.wego.wego.Fragment.AccountFragment;
+import com.wego.wego.Fragment.HomepageFragment;
+import com.wego.wego.Fragment.OrderFragment;
 import com.wego.wego.Item.ItemList;
 
 import org.json.JSONArray;
@@ -80,26 +85,35 @@ public class MainActivity extends BaseNfcActivity
 
 
     ImageView logoImage;
-    TextView logoInfo;
+
+
+
+    private OrderFragment orderFragment;
+    private AccountFragment accountFragment;
+    private HomepageFragment homepageFragment;
+
+    private FragmentManager fm;
+    // 开启Fragment事务
+    private FragmentTransaction transaction;
 
     //display the username
     public void run() {
-
-        Intent intent = getIntent();
-
-        //TextView AccountName = (TextView) LayoutInflater.from(AccountActivity.this).inflate(R.layout.nav_header_account, null).findViewById(R.id.Account_name);
-
-        //这行代码不许改！
-        TextView AccountName = (TextView)findViewById(R.id.Account_name);
-        Bundle bundle = intent.getExtras();
-        email = bundle.getString("email");
-        password = bundle.getString("password");
-        id = bundle.getInt("id");
-
-        String myString = "\n" +"\n" + "\n" + "\n" + "    " + email;
-        AccountName.setText(myString);
-        AccountName.invalidate();
-        activityHandler.postDelayed(this, 1000);
+//
+//        Intent intent = getIntent();
+//
+//        //TextView AccountName = (TextView) LayoutInflater.from(AccountActivity.this).inflate(R.layout.nav_header_account, null).findViewById(R.id.Account_name);
+//
+//        //这行代码不许改！
+//        TextView AccountName = (TextView)findViewById(R.id.Account_name);
+//        Bundle bundle = intent.getExtras();
+//        email = bundle.getString("email");
+//        password = bundle.getString("password");
+//        id = bundle.getInt("id");
+//
+//        String myString = "\n" +"\n" + "\n" + "\n" + "    " + email;
+//        AccountName.setText(myString);
+//        AccountName.invalidate();
+//        activityHandler.postDelayed(this, 1000);
     }
 
 
@@ -113,84 +127,48 @@ public class MainActivity extends BaseNfcActivity
         setSupportActionBar(toolbar);
 
         //调用run函数
-        activityHandler.post(MainActivity.this);
+       // activityHandler.post(MainActivity.this);
 
 
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
 
-        logoImage = (ImageView)findViewById(R.id.LogoView);
-        LinearLayout.LayoutParams btParams = new LinearLayout.LayoutParams(500,500);
-        btParams.width = 500;
-        btParams.height = 500;
-        btParams.topMargin = -1200;
-        btParams.gravity = Gravity.CENTER_HORIZONTAL;
-        logoImage.setLayoutParams(btParams);
+//        logoImage = (ImageView)findViewById(R.id.LogoView);
+//        LinearLayout.LayoutParams btParams = new LinearLayout.LayoutParams(500,500);
+//        btParams.width = 500;
+//        btParams.height = 500;
+//        btParams.topMargin = -1200;
+//        btParams.gravity = Gravity.CENTER_HORIZONTAL;
+//        logoImage.setLayoutParams(btParams);
+//
+//        logoInfo = (TextView)findViewById(R.id.LogoText);
+//        LinearLayout.LayoutParams InfoParams = new LinearLayout.LayoutParams(500,500);
+//        InfoParams.width = 500;
+//        InfoParams.height = 500;
+//        InfoParams.topMargin = 50;
+//        InfoParams.gravity = Gravity.CENTER_HORIZONTAL;
+//        logoInfo.setLayoutParams(InfoParams);
 
-        logoInfo = (TextView)findViewById(R.id.LogoText);
-        LinearLayout.LayoutParams InfoParams = new LinearLayout.LayoutParams(500,500);
-        InfoParams.width = 500;
-        InfoParams.height = 500;
-        InfoParams.topMargin = 50;
-        InfoParams.gravity = Gravity.CENTER_HORIZONTAL;
-        logoInfo.setLayoutParams(InfoParams);
 
 
-
+        fm = getFragmentManager();
+        transaction = fm.beginTransaction();
+        homepageFragment = new HomepageFragment();
+        transaction.add(R.id.main_layout,homepageFragment);
+        transaction.commit();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
     }
 
-    @Override
-    public void onResume(){
-        super.onResume();
-        ItemList itemList = (ItemList)getApplication();
-        boolean isPay = itemList.getPay();
-        if(itemList.tryPay && isPay){       //支付过，支付成功
-            logoInfo.setText("支付成功:)");
-
-            Timer timer = new Timer();
-            TimerTask timerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            logoInfo.setText("欢迎光临");
-                        }
-                    });
-                }
-            };
-            timer.schedule(timerTask,5000);
-        }
-        else if(itemList.tryPay && !isPay){     //支付过，支付失败
-            logoInfo.setText("支付失败:(");
-
-            Timer timer = new Timer();
-            TimerTask timerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            logoInfo.setText("欢迎光临");
-                        }
-                    });
-                }
-            };
-            timer.schedule(timerTask,5000);
-        }
-        else{
-            logoInfo.setText("欢迎光临");
-        }
-    }
 
 
     @Override
@@ -220,63 +198,79 @@ public class MainActivity extends BaseNfcActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+
+
+
         //个人信息
         if (id == R.id.nav_personInfo) {
 
-            AddorDelete(2);
+            //AddorDelete(2);
 
             System.out.println("This is in personInfo, and my name is ");
             System.out.println(email);
-            listView = (ListView)findViewById(R.id.mylistview);
-            listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,getInfo()));
 
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
 
-                @Override
-                public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                    // TODO Auto-generated method stub
-                    showInfo(arg2);
+                if(accountFragment == null){
+                    accountFragment = new AccountFragment();
                 }
-
-            });
+                transaction.replace(R.id.main_layout,accountFragment);
+                transaction.commit();
+            System.out.println("replace accountFragment!!!");
+//            listView = (ListView)findViewById(R.id.mylistview);
+//            listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,getInfo()));
+//
+//            listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+//
+//                @Override
+//                public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+//                    // TODO Auto-generated method stub
+//                    showInfo(arg2);
+//                }
+//
+//            });
 
         //历史订单
         } else if (id == R.id.nav_historyList) {
 
-
-            AddorDelete(2);
-
-            listView = (ListView)findViewById(R.id.mylistview);
-            try {
-                listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,getData()));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (TimeoutException e) {
-                System.out.println("out of time");
-                e.printStackTrace();
+            if(orderFragment == null){
+                orderFragment = new OrderFragment();
             }
-
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-
-                @Override
-                public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-                                        long arg3) {
-                    // TODO Auto-generated method stub
-                    showItem(arg2);
-                }
-
-            });
+            transaction.replace(R.id.main_layout,orderFragment);
+            transaction.commit();
+            System.out.println("replace orderFragment    !!!");
+//            AddorDelete(2);
+//
+//            listView = (ListView)findViewById(R.id.mylistview);
+//            try {
+//                listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,getData()));
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//            } catch (TimeoutException e) {
+//                System.out.println("out of time");
+//                e.printStackTrace();
+//            }
+//
+//            listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+//
+//                @Override
+//                public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+//                                        long arg3) {
+//                    // TODO Auto-generated method stub
+//                    showItem(arg2);
+//                }
+//
+//            });
 
         }
         //返回
         else if (id == R.id.nav_home) {
 
-            listView = (ListView)findViewById(R.id.mylistview);
-            listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,clearData()));
-
-            AddorDelete(1);
+//            listView = (ListView)findViewById(R.id.mylistview);
+//            listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,clearData()));
+//
+//            AddorDelete(1);
 
         }
 
@@ -286,51 +280,51 @@ public class MainActivity extends BaseNfcActivity
     }
 
     //更新页面信息
-    private void AddorDelete(int argu){
-
-
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        if (argu == 1) {
-
-            logoImage = (ImageView)findViewById(R.id.LogoView);
-            LinearLayout.LayoutParams btParams = new LinearLayout.LayoutParams(500,500);
-            btParams.width = 500;
-            btParams.height = 500;
-            btParams.topMargin = -1200;
-            btParams.gravity = Gravity.CENTER_HORIZONTAL;
-            logoImage.setLayoutParams(btParams);
-
-            logoInfo = (TextView)findViewById(R.id.LogoText);
-            LinearLayout.LayoutParams InfoParams = new LinearLayout.LayoutParams(500,500);
-            InfoParams.width = 500;
-            InfoParams.height = 500;
-            InfoParams.topMargin = 50;
-            InfoParams.gravity = Gravity.CENTER_HORIZONTAL;
-            logoInfo.setLayoutParams(InfoParams);
-
-        }
-        else {
-
-            logoImage = (ImageView)findViewById(R.id.LogoView);
-            LinearLayout.LayoutParams btParams = new LinearLayout.LayoutParams(500,500);
-            btParams.width = 500;
-            btParams.height = 500;
-            btParams.topMargin = 500;
-            btParams.gravity = Gravity.CENTER_HORIZONTAL;
-            logoImage.setLayoutParams(btParams);
-
-            logoInfo = (TextView)findViewById(R.id.LogoText);
-            LinearLayout.LayoutParams InfoParams = new LinearLayout.LayoutParams(500,500);
-            InfoParams.width = 500;
-            InfoParams.height = 500;
-            InfoParams.topMargin = 1000;
-            InfoParams.gravity = Gravity.CENTER_HORIZONTAL;
-            logoInfo.setLayoutParams(InfoParams);
-        }
-        drawer.invalidate();
-
-    }
+//    private void AddorDelete(int argu){
+//
+//
+//        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//
+//        if (argu == 1) {
+//
+//            logoImage = (ImageView)findViewById(R.id.LogoView);
+//            LinearLayout.LayoutParams btParams = new LinearLayout.LayoutParams(500,500);
+//            btParams.width = 500;
+//            btParams.height = 500;
+//            btParams.topMargin = -1200;
+//            btParams.gravity = Gravity.CENTER_HORIZONTAL;
+//            logoImage.setLayoutParams(btParams);
+//
+//            logoInfo = (TextView)findViewById(R.id.LogoText);
+//            LinearLayout.LayoutParams InfoParams = new LinearLayout.LayoutParams(500,500);
+//            InfoParams.width = 500;
+//            InfoParams.height = 500;
+//            InfoParams.topMargin = 50;
+//            InfoParams.gravity = Gravity.CENTER_HORIZONTAL;
+//            logoInfo.setLayoutParams(InfoParams);
+//
+//        }
+//        else {
+//
+//            logoImage = (ImageView)findViewById(R.id.LogoView);
+//            LinearLayout.LayoutParams btParams = new LinearLayout.LayoutParams(500,500);
+//            btParams.width = 500;
+//            btParams.height = 500;
+//            btParams.topMargin = 500;
+//            btParams.gravity = Gravity.CENTER_HORIZONTAL;
+//            logoImage.setLayoutParams(btParams);
+//
+//            logoInfo = (TextView)findViewById(R.id.LogoText);
+//            LinearLayout.LayoutParams InfoParams = new LinearLayout.LayoutParams(500,500);
+//            InfoParams.width = 500;
+//            InfoParams.height = 500;
+//            InfoParams.topMargin = 1000;
+//            InfoParams.gravity = Gravity.CENTER_HORIZONTAL;
+//            logoInfo.setLayoutParams(InfoParams);
+//        }
+//        drawer.invalidate();
+//
+//    }
     //获取历史订单列表
     private List<String> getData() throws InterruptedException, ExecutionException, TimeoutException {
 
@@ -839,41 +833,22 @@ public class MainActivity extends BaseNfcActivity
         Ndef ndef = Ndef.get(detectedTag);
         readNfcTag(intent);
         System.out.println("收到了！！！！！！"+mTagText);
-        //神奇笔记本-2001-10.56*2&罗技G502-101-399.5*1&
+
 //      mTagText = "神奇笔记本-2001-10.56*2&罗技G502-101-399.5*1&";
         ItemList itemList = (ItemList)getApplication();
-        itemList.addItemList(mTagText);
-        Bundle bundle = new Bundle();
-        bundle.putInt("id",this.id);
-        bundle.putString("password",this.password);
-        Intent intent_receiveItem = new Intent(MainActivity.this,receiveItem.class);
-        intent_receiveItem.putExtras(bundle);
-        startActivity(intent_receiveItem);
+        if(mTagText == ""){
+            Toast.makeText(this, "购物篮中未发现商品!", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            itemList.addItemList(mTagText);
+            Bundle bundle = new Bundle();
+            bundle.putInt("id",this.id);
+            bundle.putString("password",this.password);
+            Intent intent_receiveItem = new Intent(MainActivity.this,receiveItem.class);
+            intent_receiveItem.putExtras(bundle);
+            startActivity(intent_receiveItem);
+        }
 
-//        try {
-//            System.out.println(itemList.getJsonArray());
-//            //获取json数组解析出title
-//            Bundle bundle = new Bundle();
-//            bundle.putInt("id",this.id);
-//            bundle.putString("password",this.password);
-//            bundle.putString("itemList",itemList.getJsonArray().toString());
-//
-//            ExecutorService executorService= Executors.newCachedThreadPool();
-//            Callable<JSONObject> callable=new NetThread(6,bundle);
-//            Future future=executorService.submit(callable);
-//            try {
-//                JSONObject jsonObject = (JSONObject) future.get(3000, TimeUnit.MILLISECONDS);//3s超时
-//                System.out.println(jsonObject.getBoolean("status"));
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            } catch (ExecutionException e) {
-//                e.printStackTrace();
-//            } catch (TimeoutException e) {
-//                e.printStackTrace();
-//            }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
     }
 
     private void readNfcTag(Intent intent){
