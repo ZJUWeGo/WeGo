@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="card1" type="color">#009688</color>
+    <color name="card2" type="color">#ef5350</color>
+    <color name="card3" type="color">#00BCD4</color>
+    <color name="card4" type="color">#5C6BC0</color>
+    <color name="card5" type="color">#FF7043</color>
+    <!--<color name="card6" type="color">#2196F3</color>-->
+    <!--<color name="card7" type="color">#03A9F4</color>-->
+    <!--<color name="card8" type="color">#00BCD4</color>-->
+    <!--<color name="card9" type="color">#009688</color>-->
+    <!--<color name="card10" type="color">#FF9800</color>-->
+
+    <integer-array name="customizedColors">
+        <item>@color/card1</item>
+        <item>@color/card2</item>
+        <item>@color/card3</item>
+        <item>@color/card4</item>
+        <item>@color/card5</item>
+        <!--<item>@color/card6</item>-->
+        <!--<item>@color/card7</item>-->
+        <!--<item>@color/card8</item>-->
+        <!--<item>@color/card9</item>-->
+        <!--<item>@color/card10</item>-->
+    </integer-array>
+
+</resources>

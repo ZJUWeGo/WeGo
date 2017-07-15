@@ -22,6 +22,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.wego.wego.Adapter.AccountCardListAdapter;
 import com.wego.wego.MainActivity;
 import com.wego.wego.NetThread;
 import com.wego.wego.R;
@@ -46,22 +47,25 @@ import java.util.concurrent.TimeoutException;
 
 public class AccountFragment extends Fragment {
 
+    private List<String> mData;
     private ListView listView;
     private Activity mainActivity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.account_cardlist_layout, container, false);
-        listView = (ListView)view.findViewById(R.id.accountCardList);
         mainActivity = getActivity();
 
+        listView = (ListView)view.findViewById(R.id.accountCardList);
+        mData = getInfo();
+        AccountCardListAdapter accountCardListAdapter = new AccountCardListAdapter(inflater,mData);
 
-        listView.setAdapter(new ArrayAdapter<String>(mainActivity, android.R.layout.simple_expandable_list_item_1,getInfo()));
+        listView.setAdapter(accountCardListAdapter);
+
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                // TODO Auto-generated method stub
                 showInfo(arg2);
             }
         });
@@ -105,7 +109,7 @@ public class AccountFragment extends Fragment {
             for ( int i = 0; i < list.length(); i ++){
                 JSONObject temp = list.getJSONObject(i);
 
-                String tempString = "银行卡" + i + "：" + temp.get("card_id").toString();
+                String tempString = "银行卡" + i + ":" + temp.get("card_id").toString();
 
                 data.add(tempString);
             }

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/cardlist_back"
+        android:layout_width="360dp"
+        android:layout_height="100dp"
+        android:translationZ="-10dp"
+        app:srcCompat="@drawable/card_background"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        android:layout_marginRight="16dp"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <ImageView
+        android:id="@+id/cardlist_head"
+        android:layout_width="361dp"
+        android:layout_height="42dp"
+        app:srcCompat="@drawable/cardlist_head"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="@+id/cardlist_back"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="@+id/cardlist_back"
+        app:layout_constraintBottom_toBottomOf="@+id/cardlist_back"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintHorizontal_bias="0.47"
+        app:layout_constraintTop_toTopOf="@+id/cardlist_back"
+        android:layout_marginTop="0dp"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/cardName"
+        android:layout_width="161dp"
+        android:layout_height="39dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:text="银行卡0"
+        android:textColor="@color/colorWhite"
+        android:textSize="24sp"
+        app:layout_constraintHorizontal_bias="0.108"
+        app:layout_constraintLeft_toLeftOf="@+id/cardlist_head"
+        app:layout_constraintRight_toRightOf="@+id/cardlist_head"
+        app:layout_constraintTop_toTopOf="@+id/cardlist_head"
+        android:layout_marginTop="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/cardlist_back"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintVertical_bias="0.110000014" />
+
+    <TextView
+        android:id="@+id/cardNumber"
+        android:layout_width="308dp"
+        android:layout_height="29dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:text="1231 2381 2312 665767"
+        android:textColor="@color/cardList_cardNumber"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@+id/cardlist_back"
+        app:layout_constraintLeft_toLeftOf="@+id/cardlist_back"
+        app:layout_constraintRight_toRightOf="@+id/cardlist_back"
+        app:layout_constraintTop_toTopOf="@+id/cardlist_head"
+        app:layout_constraintVertical_bias="0.89" />
+
+    <ImageView
+        android:id="@+id/cardlist_add_back"
+        android:layout_width="358dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/cardlist_back"
+        app:layout_constraintRight_toRightOf="@+id/cardlist_back"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/cardlist_add" />
+
+    <ImageView
+        android:id="@+id/cardlist_add_icon"
+        android:layout_width="72dp"
+        android:layout_height="57dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/cardlist_add_back"
+        app:layout_constraintLeft_toLeftOf="@+id/cardlist_add_back"
+        app:layout_constraintRight_toRightOf="@+id/cardlist_add_back"
+        app:layout_constraintTop_toTopOf="@+id/cardlist_add_back"
+        app:srcCompat="@drawable/ic_card_add" />
+</android.support.constraint.ConstraintLayout>

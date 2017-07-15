@@ -14,5 +14,11 @@
 
     <color name="myactionBarTextColor">#FFFFFF</color>
 
+    <color name="cardList_cardNumber">#757575</color>
+    <color name="cardList_background">#EEEEEE</color>
+    <color name="cardList_addBorderColor">#9E9E9E</color>
+
+    <color name="orderList_pay_true">#009688</color>
+    <color name="orderList_pay_false">#f44336</color>
 
 </resources>

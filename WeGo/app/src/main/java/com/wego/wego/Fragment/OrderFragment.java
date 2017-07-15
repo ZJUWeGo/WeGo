@@ -12,6 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.wego.wego.Adapter.AccountCardListAdapter;
+import com.wego.wego.Adapter.HistoryOrderListAdapter;
 import com.wego.wego.MainActivity;
 import com.wego.wego.NetThread;
 import com.wego.wego.R;
@@ -39,6 +41,7 @@ import static com.wego.wego.MainActivity.unicodeToUtf8;
 public class OrderFragment extends Fragment {
     private ListView listView;
     private Activity mainActivity;
+    private List<String> mData;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,7 +49,14 @@ public class OrderFragment extends Fragment {
         listView = (ListView)view.findViewById(R.id.historyOrderList);
         mainActivity = getActivity();
         try {
-                listView.setAdapter(new ArrayAdapter<String>(mainActivity, android.R.layout.simple_expandable_list_item_1,getData()));
+                //listView.setAdapter(new ArrayAdapter<String>(mainActivity, android.R.layout.simple_expandable_list_item_1,getData()));
+
+            listView = (ListView)view.findViewById(R.id.historyOrderList);
+            mData = getData();
+            HistoryOrderListAdapter historyOrderListAdapter = new HistoryOrderListAdapter(inflater,mData);
+
+            listView.setAdapter(historyOrderListAdapter);
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
@@ -95,15 +105,15 @@ public class OrderFragment extends Fragment {
             for ( int i = 0; i < list.length(); i ++){
                 JSONObject temp = list.getJSONObject(i);
 
-                int tempLength = 5 - temp.get("order_price").toString().length();
-                //System.out.println(tempLength);
-                StringBuffer spaceString = new StringBuffer(" ");
-                while (tempLength > 0) {
-                    spaceString.append("   ");
-                    --tempLength;
-                }
+//                int tempLength = 5 - temp.get("order_price").toString().length();
+//                //System.out.println(tempLength);
+//                StringBuffer spaceString = new StringBuffer(" ");
+//                while (tempLength > 0) {
+//                    spaceString.append("   ");
+//                    --tempLength;
+//                }
                 //System.out.println("spaceString length:"+spaceString.length());
-                String tempString = temp.get("order_time").toString() + "   "+"￥" +  temp.get("order_price").toString() + spaceString.toString() + "   "+ temp.get("order_status").toString();
+                String tempString = temp.get("order_time").toString() + "&" +  temp.get("order_price").toString() + "&"+ temp.get("order_status").toString();
 
                 data.add(tempString);
             }
